@@ -72,6 +72,21 @@ component's props and its `usePulse(...)` animation hook.
 - **Phones**: the cabinet close-up reframes for portrait screens, the
   tapes appear in a tappable strip, and the games get touch buttons.
 
+## Now playing (YouTube Music → Last.fm)
+
+YouTube Music has no public listening-history API, so plays are
+"scrobbled" to Last.fm and read back by a small Vercel function
+(`api/now-playing.js`), which keeps the API key on the server. The jukebox
+shows the current/last track and BYTE mentions it; the classic view gets a
+"Listening now" line. Nothing shows until it's configured.
+
+1. Create a free account at last.fm.
+2. Connect YouTube Music: the **Web Scrobbler** browser extension
+   (desktop) and/or **Pano Scrobbler** (Android), signed in to Last.fm.
+3. Get an API key at https://www.last.fm/api/account/create.
+4. In Vercel → Project → Settings → Environment Variables add
+   `LASTFM_API_KEY` and `LASTFM_USER`, then redeploy.
+
 ## Performance notes
 
 - First paint loads ~55 kB (gzip) of JS; three.js and friends load only in

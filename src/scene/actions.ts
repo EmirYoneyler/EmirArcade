@@ -3,6 +3,7 @@ import { SECRET_COUNT } from '../data/secrets'
 import { useApp } from '../store/useApp'
 import { sfx } from '../audio/sfx'
 import { pressStart } from '../flow'
+import { latestListening, currentTrack } from '../data/nowPlaying'
 
 /** Every interactive object, in Tab order. Name doubles as the tooltip. */
 export const OBJECTS = [
@@ -61,6 +62,12 @@ export function activate(id: ObjectId) {
     case 'jukebox': {
       const on = !s.musicOn
       s.setMusic(on)
+      // if Emir's real listening is known (YouTube Music → Last.fm), BYTE gossips about it
+      const track = currentTrack(latestListening)
+      if (track) {
+        const line = latestListening?.nowPlaying ? byteLines.listeningNow : byteLines.listenedLast
+        return say(fill(line, { title: track.title, artist: track.artist }))
+      }
       return say(on ? (s.soundOn ? byteLines.jukeboxOn : byteLines.jukeboxMuted) : byteLines.jukeboxOff)
     }
     case 'claw':
