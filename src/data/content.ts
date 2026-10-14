@@ -148,7 +148,7 @@ export const cv = {
  * Keep them short — the dialog box types them out letter by letter.
  */
 export const byteLines = {
-  welcome: "Hi, I'm BYTE. Emir built this place. Poke around — almost everything does something.",
+  welcome: "Hi, I'm BYTE. Emir built this place, and the jukebox is already on (speaker up top to mute). Poke around — almost everything does something.",
   claw: 'Got one! {skill}. Emir used it in: {projects}.',
   clawNone: "Got one! {skill}. It's in the toolbox — just waiting for the right project.",
   jukeboxOn: 'Original chiptune — Emir wrote it. No copyrights were harmed.',

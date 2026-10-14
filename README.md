@@ -75,7 +75,9 @@ component's props and its `usePulse(...)` animation hook.
 Tab walks every object in the room (focus shows the same outline as
 hover) and every cartridge in the menu; Enter activates, Esc goes back.
 `prefers-reduced-motion` cuts camera flights, parallax, typing and dust.
-Sound is off by default. A skip link jumps to the classic view.
+The jukebox starts on the visitor's first click or key press (browsers
+block audio before that); the speaker button mutes it, and a mute is
+remembered. A skip link jumps to the classic view.
 
 ## Deploy (Vercel)
 

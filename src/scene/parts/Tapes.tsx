@@ -19,23 +19,29 @@ const TW = 0.15
 const TH = 0.095
 const TD = 0.022
 
-/** Tapes are a touch bigger than real cassettes, to sit right next to the scaled-up EMIR-1. */
-const TAPE_SCALE = 1.2
+/**
+ * Tapes are deliberately oversized on the rack so their labels read from the
+ * cabinet close-up; they shrink on the way into the deck so they fit the slot.
+ */
+const TAPE_SCALE = 1.9
+const DECK_TAPE_SCALE = 1.25
 
 /** Shell colours, in project order. */
 const SHELLS = [PALETTE.rust, PALETTE.teal, PALETTE.mustard, PALETTE.woodLight, PALETTE.wall]
 
 /** Where the rack stands: on a little table to the right of EMIR-1. */
-const TABLE = { x: 1.34, z: -2.25, top: 1.0, rotY: -0.24 }
+const TABLE = { x: 1.45, z: -2.2, top: 1.0, rotY: -0.24, w: 1.06, d: 0.52 }
 
 /** Slots on the stepped stand, table-local: three on the high back step, two in front. */
 const TH_S = TH * TAPE_SCALE
+/** stepped stand: the front row's tops line up with the back step so nothing hides */
+const STAND = { w: 1.0, back: 0.25, front: 0.07 }
 const SLOTS: [number, number, number][] = [
-  [-0.2, TABLE.top + 0.17 + TH_S / 2, -0.08],
-  [0, TABLE.top + 0.17 + TH_S / 2, -0.08],
-  [0.2, TABLE.top + 0.17 + TH_S / 2, -0.08],
-  [-0.1, TABLE.top + 0.07 + TH_S / 2, 0.075],
-  [0.1, TABLE.top + 0.07 + TH_S / 2, 0.075],
+  [-0.31, TABLE.top + STAND.back + TH_S / 2, -0.07],
+  [0, TABLE.top + STAND.back + TH_S / 2, -0.07],
+  [0.31, TABLE.top + STAND.back + TH_S / 2, -0.07],
+  [-0.155, TABLE.top + STAND.front + TH_S / 2, 0.11],
+  [0.155, TABLE.top + STAND.front + TH_S / 2, 0.11],
 ]
 const LEAN = -0.22 // tapes lean back against the step
 
@@ -122,34 +128,35 @@ function Tape({ index }: { index: number }) {
 
 /** Little side table with a stepped wooden stand. Table-local coordinates. */
 function RackTable() {
+  const { top, w, d } = TABLE
   return (
     <group>
-      <RoundedBox args={[0.68, 0.04, 0.42]} radius={0.01} smoothness={2} position={[0, TABLE.top - 0.02, 0]} castShadow receiveShadow>
+      <RoundedBox args={[w, 0.04, d]} radius={0.01} smoothness={2} position={[0, top - 0.02, 0]} castShadow receiveShadow>
         <Toon color={PALETTE.woodLight} />
       </RoundedBox>
       {[-1, 1].flatMap((sx) =>
         [-1, 1].map((sz) => (
-          <mesh key={`${sx}${sz}`} position={[sx * 0.3, (TABLE.top - 0.04) / 2, sz * 0.17]} castShadow>
-            <boxGeometry args={[0.04, TABLE.top - 0.04, 0.04]} />
+          <mesh key={`${sx}${sz}`} position={[sx * (w / 2 - 0.05), (top - 0.04) / 2, sz * (d / 2 - 0.05)]} castShadow>
+            <boxGeometry args={[0.045, top - 0.04, 0.045]} />
             <Toon color={PALETTE.woodDark} />
           </mesh>
         )),
       )}
       {/* stepped stand: high back step, low front step, each with a lip */}
-      <mesh position={[0, TABLE.top + 0.085, -0.115]} castShadow>
-        <boxGeometry args={[0.64, 0.17, 0.1]} />
+      <mesh position={[0, top + STAND.back / 2, -0.15]} castShadow>
+        <boxGeometry args={[STAND.w, STAND.back, 0.12]} />
         <Toon color={PALETTE.woodDark} />
       </mesh>
-      <mesh position={[0, TABLE.top + 0.035, 0.04]} castShadow>
-        <boxGeometry args={[0.64, 0.07, 0.15]} />
+      <mesh position={[0, top + STAND.front / 2, 0.06]} castShadow>
+        <boxGeometry args={[STAND.w, STAND.front, 0.24]} />
         <Toon color={PALETTE.woodDark} />
       </mesh>
       {[
-        [TABLE.top + 0.17, -0.055],
-        [TABLE.top + 0.07, 0.105],
+        [top + STAND.back, -0.04],
+        [top + STAND.front, 0.15],
       ].map(([y, z]) => (
-        <mesh key={z} position={[0, y + 0.01, z]}>
-          <boxGeometry args={[0.64, 0.02, 0.012]} />
+        <mesh key={z} position={[0, y + 0.012, z]}>
+          <boxGeometry args={[STAND.w, 0.024, 0.014]} />
           <Toon color={PALETTE.trim} />
         </mesh>
       ))}
@@ -207,22 +214,23 @@ export default function Tapes() {
       if (!r.ready) {
         a.updateWorldMatrix(true, false)
         a.matrixWorld.decompose(r.p, r.q, tmp.a)
-        g.scale.copy(tmp.a)
         r.ready = true
       }
       const t = prog[i].t
       const { a: from, b: to, q } = tmp
+      // big on the rack, deck-sized by the time it reaches the slot
+      g.scale.setScalar(TAPE_SCALE + (DECK_TAPE_SCALE - TAPE_SCALE) * smooth((t - 0.22) / 0.56))
       if (t <= 0) {
         g.position.copy(r.p)
         g.quaternion.copy(r.q)
       } else if (t < 0.22) {
         // lift straight up out of the rack
-        g.position.copy(r.p).addScaledVector(Object3D.DEFAULT_UP, 0.13 * smooth(t / 0.22))
+        g.position.copy(r.p).addScaledVector(Object3D.DEFAULT_UP, 0.2 * smooth(t / 0.22))
         g.quaternion.copy(r.q)
       } else if (t < 0.78) {
         // arc over to just above the deck, turning flat on the way
         const u = smooth((t - 0.22) / 0.56)
-        from.copy(r.p).addScaledVector(Object3D.DEFAULT_UP, 0.13)
+        from.copy(r.p).addScaledVector(Object3D.DEFAULT_UP, 0.2)
         to.copy(TAPE_DECK.position).addScaledVector(TAPE_DECK.normal, 0.18)
         g.position.lerpVectors(from, to, u).addScaledVector(Object3D.DEFAULT_UP, Math.sin(Math.PI * u) * 0.12)
         g.quaternion.copy(q.copy(r.q).slerp(TAPE_DECK.quaternion, u))
@@ -248,7 +256,7 @@ export default function Tapes() {
       <group position={[TABLE.x, 0, TABLE.z]} rotation={[0, TABLE.rotY, 0]}>
         <RackTable />
         {SLOTS.map((s, i) => (
-          <object3D key={i} position={s} rotation={[LEAN, 0, 0]} scale={TAPE_SCALE} ref={(o) => void (anchors.current[i] = o)} />
+          <object3D key={i} position={s} rotation={[LEAN, 0, 0]} ref={(o) => void (anchors.current[i] = o)} />
         ))}
       </group>
       {projects.map((p, i) => (

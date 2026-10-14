@@ -33,7 +33,7 @@ export const SCREEN_CENTER = onCabinet(new Vector3(0, S.y, S.z).addScaledVector(
 export const POSES = {
   room: pose([7.4, 5.2, 8.4], [0.15, 1.1, -0.2]),
   // frames the screen, the control-panel tape deck and the tape rack beside it
-  cabinet: pose([0.5, 2.38, 1.75], [0.5, 2.0, -2.3], 30),
+  cabinet: pose([0.68, 2.3, 1.8], [0.68, 1.88, -2.3], 30),
   // straight down the screen normal, close enough that the glass overfills the view
   screen: {
     position: SCREEN_CENTER.clone().addScaledVector(screenNormal, 0.45 * CABINET_SCALE),
