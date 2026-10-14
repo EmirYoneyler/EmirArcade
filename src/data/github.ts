@@ -15,7 +15,7 @@ export type RecentRepo = {
   pushedAt: string
 }
 
-const CACHE_KEY = 'emir-arcade:github'
+const CACHE_KEY = 'emir-arcade:github:v2' // bump when the account list changes
 const TTL = 15 * 60 * 1000
 let inflight: Promise<RecentRepo[]> | null = null
 
