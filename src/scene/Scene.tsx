@@ -2,7 +2,9 @@ import { Canvas } from '@react-three/fiber'
 import { NoToneMapping, PCFSoftShadowMap } from 'three'
 import { PALETTE } from '../theme/palette'
 import { POSES } from '../config/camera'
-import Room, { Blockout } from './Room'
+import { Selection } from '@react-three/postprocessing'
+import Room from './Room'
+import Arcade from './Arcade'
 import Lighting from './Lighting'
 import CameraRig from './CameraRig'
 import Effects from './Effects'
@@ -20,11 +22,13 @@ export default function Scene() {
       gl={{ antialias: false, powerPreference: 'high-performance', toneMapping: NoToneMapping }}
     >
       <color attach="background" args={[PALETTE.bg]} />
-      <Lighting />
-      <Room />
-      <Blockout />
-      <CameraRig />
-      <Effects />
+      <Selection>
+        <Lighting />
+        <Room />
+        <Arcade />
+        <CameraRig />
+        <Effects />
+      </Selection>
     </Canvas>
   )
 }

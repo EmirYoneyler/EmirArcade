@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { useProgress } from '@react-three/drei'
 import { about } from './data/content'
 import { useApp } from './store/useApp'
+import Hud from './ui/Hud'
 
 // 3D bundle is code-split so first paint stays light.
 const Scene = lazy(() => import('./scene/Scene'))
@@ -30,6 +31,7 @@ export default function App() {
       <Suspense fallback={<div className="boot"><div>EMIR-1 BOOT</div></div>}>
         <Scene />
       </Suspense>
+      <Hud />
       <Boot />
     </>
   )

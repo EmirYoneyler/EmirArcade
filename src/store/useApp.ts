@@ -10,6 +10,8 @@ type AppState = {
   soundOn: boolean
   selectedProject: string | null
   ready: boolean
+  hovered: string | null
+  setHovered: (n: string | null) => void
   setReady: () => void
   setView: (v: View) => void
   toggleLights: () => void
@@ -24,6 +26,8 @@ export const useApp = create<AppState>((set) => ({
   soundOn: false, // sound is OFF by default
   selectedProject: null,
   ready: false,
+  hovered: null,
+  setHovered: (hovered) => set({ hovered }),
   setReady: () => set({ ready: true }),
   setView: (view) => set({ view }),
   toggleLights: () => set((s) => ({ lightsOn: !s.lightsOn })),

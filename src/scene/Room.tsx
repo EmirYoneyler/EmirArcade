@@ -1,9 +1,8 @@
 import { useLayoutEffect, useMemo, useRef } from 'react'
 import { Color, InstancedMesh, Object3D } from 'three'
-import { RoundedBox } from '@react-three/drei'
 import { PALETTE } from '../theme/palette'
 import { ROOM } from '../config/camera'
-import { Toon, Glow } from './materials/toon'
+import { Toon } from './materials/toon'
 
 const { w: W, d: D, h: H, wallT: T } = ROOM
 
@@ -157,7 +156,7 @@ function Rug() {
       </mesh>
       <mesh position={[0, 0.012, 0]}>
         <cylinderGeometry args={[1.15, 1.15, 0.02, 40]} />
-        <Toon color={PALETTE.mustard} />
+        <Toon color={PALETTE.trim} />
       </mesh>
       <mesh position={[0, 0.024, 0]}>
         <cylinderGeometry args={[0.75, 0.75, 0.02, 40]} />
@@ -175,32 +174,6 @@ export default function Room() {
       <LeftWall />
       <WindowFrame />
       <Rug />
-    </group>
-  )
-}
-
-/**
- * TEMPORARY blockout so we can judge scale, composition and light in Phase 1.
- * Replaced by real cabinet/prop components from Phase 2 onward.
- */
-export function Blockout() {
-  const z = -D / 2 + 0.55
-  const cab = (x: number, color: string, wd: number, h: number, key: string) => (
-    <group key={key} position={[x, 0, z]}>
-      <RoundedBox args={[wd, h, 1.0]} radius={0.06} smoothness={3} position={[0, h / 2, 0]} castShadow receiveShadow>
-        <Toon color={color} />
-      </RoundedBox>
-      <mesh position={[0, h * 0.68, 0.51]}>
-        <planeGeometry args={[wd * 0.66, h * 0.3]} />
-        <Glow color={PALETTE.amber} strength={1.3} />
-      </mesh>
-    </group>
-  )
-  return (
-    <group>
-      {cab(0, PALETTE.rust, 1.35, 2.3, 'main')}
-      {cab(-1.9, PALETTE.mustard, 1.1, 2.1, 'left')}
-      {cab(1.9 - 0.2, PALETTE.teal, 1.1, 2.1, 'right')}
     </group>
   )
 }
