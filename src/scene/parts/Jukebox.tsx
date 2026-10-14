@@ -6,6 +6,49 @@ import { PALETTE, GLOW } from '../../theme/palette'
 import { Toon } from '../materials/toon'
 import { useApp } from '../../store/useApp'
 import { beat } from '../../audio/chiptune'
+import { useCanvasTexture, pixelFont } from '../materials/canvasTexture'
+import { useListening, currentTrack } from '../../data/nowPlaying'
+
+/** Fit a line of pixel text into `max` px, shrinking then ellipsising. */
+function fitText(ctx: CanvasRenderingContext2D, s: string, max: number, size: number, bold = false) {
+  let px = size
+  ctx.font = pixelFont(px, bold)
+  while (ctx.measureText(s).width > max && px > size * 0.6) ctx.font = pixelFont((px -= 2), bold)
+  let out = s
+  while (ctx.measureText(out).width > max && out.length > 3) out = out.slice(0, -2) + '…'
+  return out
+}
+
+/** Little amber screen on the jukebox: what Emir is listening to on YouTube Music (via Last.fm). */
+function NowPlayingDisplay() {
+  const listening = useListening()
+  const track = currentTrack(listening)
+  const live = !!listening?.nowPlaying
+  const tex = useCanvasTexture(512, 132, (ctx, w, h) => {
+    ctx.fillStyle = '#000'
+    ctx.fillRect(0, 0, w, h)
+    ctx.fillStyle = PALETTE.amber
+    ctx.textBaseline = 'middle'
+    ctx.textAlign = 'center'
+    if (!track) {
+      ctx.font = pixelFont(30, true)
+      ctx.fillText('EMIR-1 JUKEBOX', w / 2, 46)
+      ctx.font = pixelFont(18)
+      ctx.fillText('SIDE A · CHIPTUNE', w / 2, 94)
+      return
+    }
+    ctx.font = pixelFont(16, true)
+    ctx.fillText(live ? '● NOW PLAYING' : 'LAST PLAYED', w / 2, 20)
+    ctx.fillText(fitText(ctx, track.title.toUpperCase(), w - 30, 30, true), w / 2, 62)
+    ctx.fillText(fitText(ctx, track.artist.toUpperCase(), w - 30, 20), w / 2, 106)
+  }, [track?.title, track?.artist, live])
+  return (
+    <mesh position={[0, 0.735, 0.253]}>
+      <planeGeometry args={[0.5, 0.13]} />
+      <meshBasicMaterial map={tex} toneMapped={false} color={[1.1, 1.1, 1.1]} />
+    </mesh>
+  )
+}
 
 const AMBER = new Color(PALETTE.amber)
 const RUST = new Color(PALETTE.rust)
@@ -80,6 +123,7 @@ export default function Jukebox() {
           <Toon color={PALETTE.cream} />
         </mesh>
       </group>
+      <NowPlayingDisplay />
       {/* selector buttons */}
       {[-0.15, -0.075, 0, 0.075, 0.15].map((x, i) => (
         <mesh key={x} position={[x, 0.86, 0.26]} rotation={[Math.PI / 2, 0, 0]}>

@@ -4,6 +4,7 @@ import { useApp } from '../store/useApp'
 import ByteMark from './ByteMark'
 import RecentRepos from '../ui/RecentRepos'
 import ContactForm from '../ui/ContactForm'
+import NowListening from '../ui/NowListening'
 
 const STATUS = { LIVE: 'Live', 'IN DEV': 'In development', DONE: 'Shipped' } as const
 
@@ -46,6 +47,7 @@ export default function ClassicView() {
           <p className="c-kicker">{about.title} · {about.location}</p>
           <h1 id="name">{about.name}</h1>
           <p className="c-lead">{about.summary}</p>
+          <NowListening />
           <div className="c-actions">
             <a className="c-btn" href={`mailto:${about.email}`}>
               Email me

@@ -444,3 +444,5 @@ html[data-mode='classic'] body { overflow: auto; }
 .tapestrip__tape:nth-of-type(5n+5) { border-top: 6px solid var(--wall); }
 .tapestrip__tape small { font-size: 9px; opacity: .6; }
 .tapestrip ~ .touchpad { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+.now-listening { font-size: 13px; color: var(--trim); margin: -12px 0 22px; }
+.now-listening::before { content: '♪ '; color: var(--amber); }

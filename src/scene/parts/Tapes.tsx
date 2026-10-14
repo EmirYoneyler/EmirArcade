@@ -27,12 +27,12 @@ const TAPE_SCALE = 2.1
 const DECK_TAPE_SCALE = 1.25
 
 /** Shell colours, in project order. */
-const SHELLS = [PALETTE.rust, PALETTE.teal, PALETTE.mustard, PALETTE.woodLight, PALETTE.wall]
+const SHELLS = [PALETTE.rust, PALETTE.teal, PALETTE.mustard, PALETTE.woodLight, PALETTE.wall, PALETTE.trim]
 
 /** Where the rack stands: on a little table to the right of EMIR-1. */
 const TABLE = { x: 1.52, z: -2.2, top: 1.0, rotY: -0.26, w: 1.16, d: 0.52 }
 
-/** Slots on the stepped stand, table-local: three on the high back step, two in front. */
+/** Slots on the stepped stand, table-local: three on the high back step, three in front. */
 const TH_S = TH * TAPE_SCALE
 /** stepped stand: the front row's tops line up with the back step so nothing hides */
 const STAND = { w: 1.1, back: 0.27, front: 0.07 }
@@ -40,8 +40,9 @@ const SLOTS: [number, number, number][] = [
   [-0.35, TABLE.top + STAND.back + TH_S / 2, -0.07],
   [0, TABLE.top + STAND.back + TH_S / 2, -0.07],
   [0.35, TABLE.top + STAND.back + TH_S / 2, -0.07],
-  [-0.175, TABLE.top + STAND.front + TH_S / 2, 0.11],
-  [0.175, TABLE.top + STAND.front + TH_S / 2, 0.11],
+  [-0.35, TABLE.top + STAND.front + TH_S / 2, 0.11],
+  [0, TABLE.top + STAND.front + TH_S / 2, 0.11],
+  [0.35, TABLE.top + STAND.front + TH_S / 2, 0.11],
 ]
 const LEAN = -0.22 // tapes lean back against the step
 
