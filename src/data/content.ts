@@ -30,7 +30,6 @@ export const about = {
   email: 'emiryoneyler@gmail.com',
   github: [
     { label: 'EmirYoneyler', href: 'https://github.com/EmirYoneyler' },
-    { label: 'realmeric', href: 'https://github.com/realmeric' },
   ],
 }
 
