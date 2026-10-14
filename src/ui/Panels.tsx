@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useApp } from '../store/useApp'
 import { about, contact, cv, projects } from '../data/content'
+import RecentRepos from './RecentRepos'
+import ContactForm from './ContactForm'
 
 /** Paper-style modal sheet used for the CV and the contact card. */
 function Sheet({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
@@ -50,6 +52,8 @@ function CV() {
           <li key={f}>{f}</li>
         ))}
       </ul>
+      <h3>Recently on GitHub</h3>
+      <RecentRepos />
       <h3>Projects</h3>
       <ul>
         {projects.map((p) => (
@@ -77,6 +81,8 @@ function Contact() {
     <>
       <h2 className="sheet__title">Open for work</h2>
       <p>{contact.pitch}</p>
+      <h3>Send a message</h3>
+      <ContactForm />
       <h3>Email</h3>
       <p className="sheet__row">
         <a href={`mailto:${contact.email}`}>{contact.email}</a>

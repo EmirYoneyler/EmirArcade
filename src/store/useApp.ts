@@ -65,6 +65,9 @@ type AppState = {
   cheat: boolean
   /** tape under the cursor / keyboard focus, announced on EMIR-1's screen */
   tapeHover: number | null
+  /** built-in game loaded on EMIR-1 */
+  game: 'rally' | 'patrol'
+  setGame: (g: 'rally' | 'patrol') => void
   setTapeHover: (i: number | null) => void
 
   setHovered: (n: string | null) => void
@@ -115,6 +118,8 @@ export const useApp = create<AppState>((set, get) => ({
   pulses: {},
   cheat: false,
   tapeHover: null,
+  game: 'rally',
+  setGame: (game) => set({ game }),
   setTapeHover: (tapeHover) => set({ tapeHover }),
 
   setHovered: (hovered) => set({ hovered }),

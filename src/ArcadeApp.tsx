@@ -4,6 +4,7 @@ import ProjectPage from './ui/ProjectPage'
 import DialogBox from './ui/DialogBox'
 import Panels from './ui/Panels'
 import Corner from './ui/Corner'
+import TouchPad from './ui/TouchPad'
 import { useApp } from './store/useApp'
 import './audio/chiptune'
 
@@ -24,6 +25,7 @@ export default function ArcadeApp() {
         <Scene />
       </Suspense>
       <Hud />
+      <TouchPad />
       <Corner />
       <DialogBox />
       <Panels />

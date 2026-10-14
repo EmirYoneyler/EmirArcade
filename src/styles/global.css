@@ -380,3 +380,67 @@ html[data-mode='classic'] body { overflow: auto; }
 .c-email { font-family: var(--font-pixel); font-size: clamp(16px, 3.4vw, 26px); color: var(--amber) !important; word-break: break-all; }
 .c-footer { display: flex; align-items: center; gap: 10px; padding: 32px 0 48px; color: var(--trim); font-size: 13px; }
 .c-footer .byte-mark { color: var(--amber); }
+
+/* ---------- recently on GitHub ---------- */
+.recent-repos { list-style: none; padding: 0; margin: 0 0 8px; display: grid; gap: 8px; }
+.recent-repos li { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.recent-repos a { font-weight: 600; }
+.recent-repos__lang, .recent-repos__when { font-size: 12px; opacity: .7; }
+.recent-repos__when { margin-left: auto; }
+.recent-repos__desc { flex-basis: 100%; font-size: 13px; opacity: .85; }
+.c-repos li { background: var(--wall); padding: 12px 14px; box-shadow: 3px 3px 0 #000; }
+.c-github:has(.c-repos:empty), .c-github:not(:has(li)) { display: none; }
+
+/* ---------- contact form ---------- */
+.contact-form { display: grid; gap: 12px; margin: 8px 0 18px; max-width: 520px; }
+.contact-form label { display: grid; gap: 4px; font-size: 13px; }
+.contact-form input, .contact-form textarea {
+  font: inherit; font-size: 14px; padding: 9px 10px; border: 2px solid currentColor; background: transparent; color: inherit;
+}
+.contact-form textarea { resize: vertical; }
+.contact-form button {
+  justify-self: start; font-family: var(--font-pixel); font-size: 12px; letter-spacing: .1em;
+  background: var(--bg); color: var(--cream); border: 0; padding: 10px 16px 9px; cursor: pointer; box-shadow: 3px 3px 0 rgba(0,0,0,.4);
+}
+.classic .contact-form button { background: var(--amber); color: var(--bg); }
+.contact-form button:disabled { opacity: .6; cursor: wait; }
+.contact-form__trap { position: absolute; left: -9999px; width: 1px; height: 1px; }
+.contact-form__error { margin: 0; font-size: 13px; }
+.contact-form__done { font-weight: 600; }
+
+/* ---------- touch game controls ---------- */
+.touchpad {
+  position: fixed; z-index: 25; right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(20px, env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; align-items: flex-end; gap: 10px; touch-action: none; user-select: none;
+}
+.touchpad__col, .touchpad__row { display: flex; gap: 10px; }
+.touchpad__col { flex-direction: column; }
+.touchpad__btn {
+  width: 64px; height: 64px; border: 3px solid var(--amber); background: rgba(31, 36, 33, .85); color: var(--amber);
+  font-family: var(--font-pixel); font-size: 22px; box-shadow: 3px 3px 0 #000; touch-action: none;
+}
+.touchpad__btn:active { background: var(--amber); color: var(--bg); transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
+.touchpad__btn--wide { width: 138px; font-size: 16px; letter-spacing: .12em; }
+
+/* ---------- phone tape strip ---------- */
+.tapestrip {
+  position: fixed; z-index: 24; left: 0; right: 0; bottom: 0;
+  display: flex; gap: 8px; align-items: center; overflow-x: auto; scrollbar-width: none;
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) max(10px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  background: linear-gradient(to top, rgba(31,36,33,.95), rgba(31,36,33,.75));
+  border-top: 2px solid var(--trim);
+}
+.tapestrip__label { font-family: var(--font-pixel); font-size: 10px; letter-spacing: .14em; color: var(--trim); flex: none; }
+.tapestrip__tape {
+  flex: none; display: grid; gap: 1px; text-align: left;
+  font-family: var(--font-pixel); font-size: 12px; letter-spacing: .06em;
+  background: var(--cream); color: var(--bg); border: 2px solid var(--bg); padding: 6px 10px 5px;
+  box-shadow: 3px 3px 0 #000;
+}
+.tapestrip__tape:nth-of-type(5n+1) { border-top: 6px solid var(--rust); }
+.tapestrip__tape:nth-of-type(5n+2) { border-top: 6px solid var(--teal); }
+.tapestrip__tape:nth-of-type(5n+3) { border-top: 6px solid var(--mustard); }
+.tapestrip__tape:nth-of-type(5n+4) { border-top: 6px solid var(--wood-light); }
+.tapestrip__tape:nth-of-type(5n+5) { border-top: 6px solid var(--wall); }
+.tapestrip__tape small { font-size: 9px; opacity: .6; }
+.tapestrip ~ .touchpad { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }

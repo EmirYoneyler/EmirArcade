@@ -19,6 +19,7 @@ export const registerGameStart = (fn: typeof onGameStart) => void (onGameStart =
 export async function pressStart() {
   if (get().view !== 'room') return
   const game = onGameStart?.() ?? 'rally'
+  get().setGame(game)
   get().setView('cabinet')
   get().say(game === 'rally' ? byteLines.rally : byteLines.patrol)
   await flyTo('cabinet')
@@ -31,7 +32,7 @@ export async function pressStart() {
 export async function chooseProject(index = get().menuIndex) {
   if (get().view === 'room') {
     get().setMenuIndex(index)
-    onGameStart?.()
+    get().setGame(onGameStart?.() ?? 'rally')
     get().setView('cabinet')
     await flyTo('cabinet')
   }

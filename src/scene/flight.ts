@@ -6,9 +6,9 @@ const reduceMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 /** How much mouse parallax each pose allows. */
-const PARALLAX: Record<PoseName, number> = { room: 1, cabinet: 0.2, screen: 0 }
+const PARALLAX: Record<PoseName, number> = { room: 1, cabinet: 0.2, cabinetNarrow: 0.1, screen: 0 }
 /** How much narrow-viewport back-off each pose allows. */
-const FIT: Record<PoseName, number> = { room: 1, cabinet: 0.6, screen: 0 }
+const FIT: Record<PoseName, number> = { room: 1, cabinet: 0.6, cabinetNarrow: 0, screen: 0 }
 
 let tl: gsap.core.Timeline | null = null
 
@@ -16,7 +16,9 @@ let tl: gsap.core.Timeline | null = null
  * Fly the camera to a named pose. With prefers-reduced-motion the camera
  * cuts instead of flying. Resolves when the camera has arrived.
  */
-export function flyTo(name: PoseName, duration = 1.2, ease = 'power3.inOut'): Promise<void> {
+export function flyTo(requested: PoseName, duration = 1.2, ease = 'power3.inOut'): Promise<void> {
+  // on portrait screens the cabinet close-up swaps to a framing that fits
+  const name: PoseName = requested === 'cabinet' && window.innerWidth / window.innerHeight < 1 ? 'cabinetNarrow' : requested
   const p = POSES[name]
   tl?.kill()
   if (reduceMotion()) {
