@@ -1,32 +1,19 @@
 import { PALETTE } from '../theme/palette'
-import { ROOM } from '../config/camera'
+import { CABINET_SCALE, MAIN_CABINET, STAGE_HEIGHT } from '../config/camera'
+import { Toon } from './materials/toon'
 import Cabinet, { type CabinetPaint } from './parts/Cabinet'
 import Tapes from './parts/Tapes'
 import Interactive from './Interactive'
-import { useApp } from '../store/useApp'
-import { chooseProject } from '../flow'
-import { menuRowAt } from './crt/menu'
+import { useApp, type View } from '../store/useApp'
+import { screenPointer } from './crt/games'
 import type { ProgramName } from './crt/registry'
-import type { View } from '../store/useApp'
 
-const BACK = -ROOM.d / 2 + 0.55
-
+/** What EMIR-1's screen shows in each view. */
 const MAIN_PROGRAM: Record<View, ProgramName> = {
   room: 'attract',
-  cabinet: 'menu',
+  cabinet: 'game',
   loading: 'loading',
   project: 'loading',
-}
-
-/** Mouse on the EMIR-1 menu: hover moves the cursor, click starts. */
-function onMainScreen(type: 'move' | 'click' | 'leave', x: number, y: number) {
-  const s = useApp.getState()
-  if (s.view !== 'cabinet') return
-  const row = menuRowAt(x, y)
-  document.body.style.cursor = row >= 0 ? 'pointer' : ''
-  if (row < 0) return
-  if (type === 'move' && row !== s.menuIndex) s.setMenuIndex(row)
-  if (type === 'click') chooseProject(row)
 }
 
 const MAIN: CabinetPaint = {
@@ -35,25 +22,28 @@ const MAIN: CabinetPaint = {
   body: PALETTE.woodDark,
   stripes: [PALETTE.mustard, PALETTE.cream, PALETTE.teal],
 }
-const LEFT: CabinetPaint = {
-  side: PALETTE.mustard,
-  molding: PALETTE.woodDark,
-  body: PALETTE.teal,
-  stripes: [PALETTE.rust, PALETTE.cream, PALETTE.teal],
-}
-const RIGHT: CabinetPaint = {
-  side: PALETTE.teal,
-  molding: PALETTE.mustard,
-  body: PALETTE.woodDark,
-  stripes: [PALETTE.mustard, PALETTE.rust, PALETTE.cream],
-}
 
-/** The three cabinets against the back wall. */
+/** EMIR-1 — the one machine in the room — and the tape rack beside it. */
 export default function Arcade() {
   const view = useApp((s) => s.view)
   return (
     <group>
-      <group position={[0, 0, BACK]}>
+      {/* octagonal stage: says "this is the one" from across the room */}
+      <group position={[MAIN_CABINET.x, 0, MAIN_CABINET.z + 0.15]}>
+        <mesh position={[0, STAGE_HEIGHT / 2, 0]} rotation={[0, Math.PI / 8, 0]} receiveShadow castShadow>
+          <cylinderGeometry args={[1.0, 1.04, STAGE_HEIGHT, 8]} />
+          <Toon color={PALETTE.woodDark} />
+        </mesh>
+        <mesh position={[0, STAGE_HEIGHT + 0.004, 0]} rotation={[0, Math.PI / 8, 0]} receiveShadow>
+          <cylinderGeometry args={[0.98, 0.98, 0.008, 8]} />
+          <Toon color={PALETTE.woodLight} />
+        </mesh>
+        <mesh position={[0, STAGE_HEIGHT - 0.012, 0]} rotation={[0, Math.PI / 8, 0]}>
+          <cylinderGeometry args={[1.045, 1.045, 0.016, 8]} />
+          <Toon color={PALETTE.trim} />
+        </mesh>
+      </group>
+      <group position={MAIN_CABINET.toArray()} scale={CABINET_SCALE}>
         <Interactive id="emir1" enabled={view === 'room'}>
           <Cabinet
             paint={MAIN}
@@ -63,19 +53,9 @@ export default function Arcade() {
             deck
             screenRes={[640, 480]}
             screenPixelScale={2}
-            screenFps={view === 'room' ? 20 : 30}
-            onScreen={onMainScreen}
+            screenFps={view === 'cabinet' ? 60 : view === 'room' ? 20 : 30}
+            onScreen={screenPointer}
           />
-        </Interactive>
-      </group>
-      <group position={[-1.62, 0, BACK - 0.04]} rotation={[0, 0.14, 0]} scale={0.94}>
-        <Interactive id="rally" enabled={view === 'room'}>
-          <Cabinet paint={LEFT} title="RALLY" program="rally" width={0.92} screenFps={15} />
-        </Interactive>
-      </group>
-      <group position={[1.62, 0, BACK - 0.04]} rotation={[0, -0.14, 0]} scale={0.94}>
-        <Interactive id="patrol" enabled={view === 'room'}>
-          <Cabinet paint={RIGHT} title="PATROL" program="patrol" width={0.92} screenFps={15} />
         </Interactive>
       </group>
       <Tapes />

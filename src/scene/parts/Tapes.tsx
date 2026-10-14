@@ -19,19 +19,23 @@ const TW = 0.15
 const TH = 0.095
 const TD = 0.022
 
+/** Tapes are a touch bigger than real cassettes, to sit right next to the scaled-up EMIR-1. */
+const TAPE_SCALE = 1.2
+
 /** Shell colours, in project order. */
 const SHELLS = [PALETTE.rust, PALETTE.teal, PALETTE.mustard, PALETTE.woodLight, PALETTE.wall]
 
 /** Where the rack stands: on a little table to the right of EMIR-1. */
-const TABLE = { x: 0.88, z: -2.36, top: 0.76, rotY: -0.2 }
+const TABLE = { x: 1.34, z: -2.25, top: 1.0, rotY: -0.24 }
 
 /** Slots on the stepped stand, table-local: three on the high back step, two in front. */
+const TH_S = TH * TAPE_SCALE
 const SLOTS: [number, number, number][] = [
-  [-0.165, TABLE.top + 0.17 + TH / 2, -0.08],
-  [0, TABLE.top + 0.17 + TH / 2, -0.08],
-  [0.165, TABLE.top + 0.17 + TH / 2, -0.08],
-  [-0.085, TABLE.top + 0.07 + TH / 2, 0.075],
-  [0.085, TABLE.top + 0.07 + TH / 2, 0.075],
+  [-0.2, TABLE.top + 0.17 + TH_S / 2, -0.08],
+  [0, TABLE.top + 0.17 + TH_S / 2, -0.08],
+  [0.2, TABLE.top + 0.17 + TH_S / 2, -0.08],
+  [-0.1, TABLE.top + 0.07 + TH_S / 2, 0.075],
+  [0.1, TABLE.top + 0.07 + TH_S / 2, 0.075],
 ]
 const LEAN = -0.22 // tapes lean back against the step
 
@@ -120,12 +124,12 @@ function Tape({ index }: { index: number }) {
 function RackTable() {
   return (
     <group>
-      <RoundedBox args={[0.58, 0.04, 0.42]} radius={0.01} smoothness={2} position={[0, TABLE.top - 0.02, 0]} castShadow receiveShadow>
+      <RoundedBox args={[0.68, 0.04, 0.42]} radius={0.01} smoothness={2} position={[0, TABLE.top - 0.02, 0]} castShadow receiveShadow>
         <Toon color={PALETTE.woodLight} />
       </RoundedBox>
       {[-1, 1].flatMap((sx) =>
         [-1, 1].map((sz) => (
-          <mesh key={`${sx}${sz}`} position={[sx * 0.25, (TABLE.top - 0.04) / 2, sz * 0.17]} castShadow>
+          <mesh key={`${sx}${sz}`} position={[sx * 0.3, (TABLE.top - 0.04) / 2, sz * 0.17]} castShadow>
             <boxGeometry args={[0.04, TABLE.top - 0.04, 0.04]} />
             <Toon color={PALETTE.woodDark} />
           </mesh>
@@ -133,11 +137,11 @@ function RackTable() {
       )}
       {/* stepped stand: high back step, low front step, each with a lip */}
       <mesh position={[0, TABLE.top + 0.085, -0.115]} castShadow>
-        <boxGeometry args={[0.54, 0.17, 0.1]} />
+        <boxGeometry args={[0.64, 0.17, 0.1]} />
         <Toon color={PALETTE.woodDark} />
       </mesh>
       <mesh position={[0, TABLE.top + 0.035, 0.04]} castShadow>
-        <boxGeometry args={[0.54, 0.07, 0.15]} />
+        <boxGeometry args={[0.64, 0.07, 0.15]} />
         <Toon color={PALETTE.woodDark} />
       </mesh>
       {[
@@ -145,7 +149,7 @@ function RackTable() {
         [TABLE.top + 0.07, 0.105],
       ].map(([y, z]) => (
         <mesh key={z} position={[0, y + 0.01, z]}>
-          <boxGeometry args={[0.54, 0.02, 0.012]} />
+          <boxGeometry args={[0.64, 0.02, 0.012]} />
           <Toon color={PALETTE.trim} />
         </mesh>
       ))}
@@ -159,9 +163,9 @@ function RackTable() {
  */
 export default function Tapes() {
   const view = useApp((s) => s.view)
-  const menuIndex = useApp((s) => s.menuIndex)
+  const tapeHover = useApp((s) => s.tapeHover)
   const selected = useApp((s) => s.selectedProject)
-  const setMenuIndex = useApp((s) => s.setMenuIndex)
+  const setTapeHover = useApp((s) => s.setTapeHover)
 
   const anchors = useRef<(Object3D | null)[]>([])
   const tapes = useRef<(Group | null)[]>([])
@@ -203,6 +207,7 @@ export default function Tapes() {
       if (!r.ready) {
         a.updateWorldMatrix(true, false)
         a.matrixWorld.decompose(r.p, r.q, tmp.a)
+        g.scale.copy(tmp.a)
         r.ready = true
       }
       const t = prog[i].t
@@ -243,7 +248,7 @@ export default function Tapes() {
       <group position={[TABLE.x, 0, TABLE.z]} rotation={[0, TABLE.rotY, 0]}>
         <RackTable />
         {SLOTS.map((s, i) => (
-          <object3D key={i} position={s} rotation={[LEAN, 0, 0]} ref={(o) => void (anchors.current[i] = o)} />
+          <object3D key={i} position={s} rotation={[LEAN, 0, 0]} scale={TAPE_SCALE} ref={(o) => void (anchors.current[i] = o)} />
         ))}
       </group>
       {projects.map((p, i) => (
@@ -251,9 +256,9 @@ export default function Tapes() {
           <Interactive
             name={`${p.title} · tape ${i + 1}`}
             enabled={canPick && deckIndex !== i}
-            highlight={view === 'cabinet' && menuIndex === i}
+            highlight={view === 'cabinet' && tapeHover === i}
             lift={0.03}
-            onHover={(over) => over && view === 'cabinet' && setMenuIndex(i)}
+            onHover={(over) => setTapeHover(over ? i : null)}
             onActivate={() => chooseProject(i)}
           >
             <Tape index={i} />

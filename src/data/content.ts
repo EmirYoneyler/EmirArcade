@@ -162,8 +162,8 @@ export const byteLines = {
   plant: ['The plant is thriving. Mostly on screen light.', 'Watered by the monitor glow. Allegedly.'],
   switchOff: 'Lights out. Screens only — the proper way to play.',
   switchOn: "Lights back on. Don't tell the cat.",
-  rally: 'RALLY. High score: 7. Set by the cat, somehow.',
-  patrol: "PATROL. They've been marching since 1981. Never once landed.",
+  rally: 'RALLY is loaded. Up/Down or the mouse moves your paddle. Want a project instead? Grab a tape from the rack.',
+  patrol: 'PATROL is loaded. Left/Right to move, Space to fire. Want a project instead? Grab a tape from the rack.',
   konami: 'Cheat code accepted. +30 lives. Emir would be proud.',
   allSecrets: "That's all 12 secrets. You're officially a regular here.",
 }

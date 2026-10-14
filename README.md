@@ -1,9 +1,11 @@
 # EMIR-1 — a portfolio you can walk into
 
 A cozy, late-night arcade room built with React Three Fiber. Every object
-does something. Each project is a cassette tape on the rack beside the
-main cabinet: pick one and it flies into EMIR-1's tape deck, the CRT reads
-it, and the camera dives into the screen to show the project. The site
+does something. EMIR-1, the big cabinet on its own stage, boots straight
+into one of two playable games (RALLY or PATROL). Each project is a
+cassette tape on the rack beside it: pick one and it flies into EMIR-1's
+tape deck, the CRT reads it, and the camera dives into the screen to show
+the project. The site
 always opens in the arcade; a plain, fast **classic view** with the same
 content is one click away (and is what browsers without WebGL get).
 
@@ -47,7 +49,7 @@ src/
     Scene.tsx Room.tsx Arcade.tsx Props.tsx Lighting.tsx Effects.tsx
     CameraRig.tsx flight.ts      GSAP camera moves, parallax
     Interactive.tsx actions.ts   hover/outline/tooltip, what each click does
-    crt/                         CRT shader + pixel programs (attract, menu…)
+    crt/                         CRT shader + pixel programs (attract, games, loading)
     parts/                       one component per object (Tapes.tsx: rack + tape flight)
     materials/                   toon / glow materials, canvas textures
 ```

@@ -64,7 +64,7 @@ export default function DialogBox() {
   useEffect(() => {
     if (!dialog) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === ' ' && document.activeElement === document.body) {
+      if (e.key === ' ' && document.activeElement === document.body && useApp.getState().view !== 'cabinet') {
         e.preventDefault()
         advance()
       }

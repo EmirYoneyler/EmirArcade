@@ -53,6 +53,9 @@ type AppState = {
   /** bumps each time an object is activated; components animate on change */
   pulses: Record<string, number>
   cheat: boolean
+  /** tape under the cursor / keyboard focus, announced on EMIR-1's screen */
+  tapeHover: number | null
+  setTapeHover: (i: number | null) => void
 
   setHovered: (n: string | null) => void
   setFocused: (id: string | null) => void
@@ -101,6 +104,8 @@ export const useApp = create<AppState>((set, get) => ({
   toasts: [],
   pulses: {},
   cheat: false,
+  tapeHover: null,
+  setTapeHover: (tapeHover) => set({ tapeHover }),
 
   setHovered: (hovered) => set({ hovered }),
   setFocused: (focused) => set({ focused }),

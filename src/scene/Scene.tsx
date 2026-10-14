@@ -7,6 +7,8 @@ import { PALETTE } from '../theme/palette'
 import { POSES } from '../config/camera'
 import { useApp } from '../store/useApp'
 import { registerCamera } from '../cameraBridge'
+import { registerGameStart } from '../flow'
+import { startGame, currentGame } from './crt/games'
 import { flyTo } from './flight'
 import Room from './Room'
 import Arcade from './Arcade'
@@ -24,8 +26,8 @@ function BootReporter() {
 
   useEffect(() => {
     document.fonts.ready.then(() => setFonts(true))
-    if (import.meta.env.DEV) (window as unknown as { __gl: typeof gl }).__gl = gl
-  }, [gl])
+    if (import.meta.env.DEV) Object.assign(window, { __gl: gl, __scene: scene, __camera: camera })
+  }, [gl, scene, camera])
 
   useEffect(() => {
     if (!fonts || active) {
@@ -54,7 +56,8 @@ export default function Scene() {
 
   useEffect(() => {
     registerCamera(flyTo)
-    return () => registerCamera(null)
+    registerGameStart(() => (startGame(), currentGame()))
+    return () => (registerCamera(null), registerGameStart(null))
   }, [])
 
   return (
@@ -66,10 +69,10 @@ export default function Scene() {
         camera={{ fov: POSES.room.fov, near: 0.1, far: 60, position: POSES.room.position.toArray() }}
         gl={{ antialias: false, powerPreference: 'high-performance', toneMapping: NoToneMapping }}
       >
-        {/* step quality down on slow GPUs: first resolution, then post effects */}
+        {/* step quality down on slow GPUs: first resolution, then post effects.
+            One-way on purpose — each resize costs a blank frame, so never flip back. */}
         <PerformanceMonitor
           onDecline={() => (dpr > 1 ? setDpr(1) : setLowFx(true))}
-          onIncline={() => setDpr(1.5)}
           flipflops={3}
           onFallback={() => (setDpr(1), setLowFx(true))}
         />

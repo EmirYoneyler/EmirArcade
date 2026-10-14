@@ -3,7 +3,7 @@ import { projects, byteLines, about } from '../data/content'
 import { OBJECTS, activate } from '../scene/actions'
 import { sfx } from '../audio/sfx'
 import { useApp } from '../store/useApp'
-import { pressStart, goBack, moveMenu, chooseProject, stepProject } from '../flow'
+import { pressStart, goBack, chooseProject, stepProject } from '../flow'
 
 /** Cursor-following name tag for whatever 3D prop is hovered. */
 function Tooltip() {
@@ -28,19 +28,14 @@ function Tooltip() {
  * same cursor as the canvas so keyboard and mouse never disagree.
  */
 function MenuMirror() {
-  const menuIndex = useApp((s) => s.menuIndex)
-  const setMenuIndex = useApp((s) => s.setMenuIndex)
+  const setTapeHover = useApp((s) => s.setTapeHover)
   return (
-    <nav className="sr-only" aria-label="Select a project">
+    <nav className="sr-only" aria-label="Project tapes">
       <ul>
         {projects.map((p, i) => (
           <li key={p.id}>
-            <button
-              aria-current={i === menuIndex}
-              onFocus={() => setMenuIndex(i)}
-              onClick={() => chooseProject(i)}
-            >
-              {p.title} — {p.pitch}
+            <button onFocus={() => setTapeHover(i)} onBlur={() => setTapeHover(null)} onClick={() => chooseProject(i)}>
+              Tape {i + 1}: {p.title} — {p.pitch}
             </button>
           </li>
         ))}
@@ -110,10 +105,9 @@ export default function Hud() {
       }
       if (v === 'room' && e.key === 'Enter' && document.activeElement === document.body && !st.panel) pressStart()
       if (v === 'cabinet') {
-        if (e.key === 'ArrowUp') (e.preventDefault(), moveMenu(-1))
-        if (e.key === 'ArrowDown') (e.preventDefault(), moveMenu(1))
-        // a focused mirror button handles its own Enter via click
-        if (e.key === 'Enter' && !(document.activeElement instanceof HTMLButtonElement)) chooseProject()
+        // arrows / Space drive the game; number keys insert a tape
+        const n = Number(e.key)
+        if (Number.isInteger(n) && n >= 1 && n <= projects.length) chooseProject(n - 1)
       }
       if (v === 'project') {
         if (e.key === 'ArrowLeft') stepProject(-1)
