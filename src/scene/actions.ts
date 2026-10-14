@@ -7,8 +7,6 @@ import { pressStart } from '../flow'
 /** Every interactive object, in Tab order. Name doubles as the tooltip. */
 export const OBJECTS = [
   { id: 'emir1', name: 'EMIR-1 · press start' },
-  { id: 'rally', name: 'RALLY' },
-  { id: 'patrol', name: 'PATROL' },
   { id: 'claw', name: 'Claw machine' },
   { id: 'jukebox', name: 'Jukebox' },
   { id: 'cat', name: 'Kernel the cat' },
@@ -40,10 +38,6 @@ export function activate(id: ObjectId) {
 
   const s = get()
   switch (id) {
-    case 'rally':
-      return say(byteLines.rally)
-    case 'patrol':
-      return say(byteLines.patrol)
     case 'cat':
       sfx('meow')
       return say(pick(byteLines.cat))

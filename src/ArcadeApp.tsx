@@ -14,6 +14,8 @@ const Scene = lazy(() => import('./scene/Scene'))
 export default function ArcadeApp() {
   useEffect(() => {
     useApp.getState().setBoot('rom', 0.35) // UI shell is in; the 3D bundle is next
+    // the jukebox is playing when you walk in (starts on the first click/key)
+    useApp.getState().setMusic(true)
     return () => useApp.getState().setMusic(false)
   }, [])
   return (

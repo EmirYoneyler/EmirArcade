@@ -6,7 +6,13 @@ import { useApp } from '../store/useApp'
 import { activate, objectName, type ObjectId } from './actions'
 
 type Props = {
-  id: ObjectId
+  /** a room object from OBJECTS — or pass name + onActivate for anything else */
+  id?: ObjectId
+  name?: string
+  onActivate?: () => void
+  onHover?: (over: boolean) => void
+  /** highlight as if hovered (keyboard focus, menu selection…) */
+  highlight?: boolean
   enabled?: boolean
   lift?: number
   children: ReactNode
@@ -16,12 +22,13 @@ type Props = {
  * Makes any prop interactive: soft outline + small lift on hover (or on
  * keyboard focus via the Tab mirror), cursor tooltip, click to activate.
  */
-export default function Interactive({ id, enabled = true, lift = 0.03, children }: Props) {
+export default function Interactive({ id, name, onActivate, onHover, highlight = false, enabled = true, lift = 0.03, children }: Props) {
   const ref = useRef<Group>(null)
   const [hover, setHover] = useState(false)
-  const focused = useApp((s) => s.focused === id)
+  const focused = useApp((s) => (id ? s.focused === id : false))
   const setHovered = useApp((s) => s.setHovered)
-  const active = (hover || focused) && enabled
+  const active = (hover || focused || highlight) && enabled
+  const label = name ?? (id ? objectName(id) : '')
 
   useFrame((_, dt) => {
     const g = ref.current
@@ -34,14 +41,16 @@ export default function Interactive({ id, enabled = true, lift = 0.03, children 
     e.stopPropagation()
     setHover(true)
     if (enabled) {
-      setHovered(objectName(id))
+      setHovered(label)
       document.body.style.cursor = 'pointer'
+      onHover?.(true)
     }
   }
   const out = () => {
     setHover(false)
     setHovered(null)
     document.body.style.cursor = ''
+    onHover?.(false)
   }
 
   return (
@@ -53,7 +62,8 @@ export default function Interactive({ id, enabled = true, lift = 0.03, children 
         onClick={(e) => {
           if (!enabled) return
           e.stopPropagation()
-          activate(id)
+          if (onActivate) onActivate()
+          else if (id) activate(id)
         }}
       >
         {children}

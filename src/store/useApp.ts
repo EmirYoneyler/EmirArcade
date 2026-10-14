@@ -13,6 +13,16 @@ export type Panel = 'cv' | 'contact' | null
 export type Toast = { id: number; text: string }
 
 const SECRETS_KEY = 'emir-arcade:secrets'
+const MUTED_KEY = 'emir-arcade:muted'
+
+/** Sound is on unless this visitor muted it before. */
+function loadSoundOn() {
+  try {
+    return localStorage.getItem(MUTED_KEY) !== '1'
+  } catch {
+    return true
+  }
+}
 function loadSecrets(): SecretId[] {
   try {
     const raw = JSON.parse(localStorage.getItem(SECRETS_KEY) ?? '[]')
@@ -53,6 +63,9 @@ type AppState = {
   /** bumps each time an object is activated; components animate on change */
   pulses: Record<string, number>
   cheat: boolean
+  /** tape under the cursor / keyboard focus, announced on EMIR-1's screen */
+  tapeHover: number | null
+  setTapeHover: (i: number | null) => void
 
   setHovered: (n: string | null) => void
   setFocused: (id: string | null) => void
@@ -88,7 +101,7 @@ export const useApp = create<AppState>((set, get) => ({
   setBoot: (bootStage, bootProgress = 0) => set({ bootStage, bootProgress, ready: bootStage === 'done' }),
   view: 'room',
   lightsOn: true,
-  soundOn: false, // sound is OFF by default
+  soundOn: loadSoundOn(),
   musicOn: false,
   menuIndex: 0,
   selectedProject: null,
@@ -101,6 +114,8 @@ export const useApp = create<AppState>((set, get) => ({
   toasts: [],
   pulses: {},
   cheat: false,
+  tapeHover: null,
+  setTapeHover: (tapeHover) => set({ tapeHover }),
 
   setHovered: (hovered) => set({ hovered }),
   setFocused: (focused) => set({ focused }),
@@ -108,7 +123,15 @@ export const useApp = create<AppState>((set, get) => ({
   setMenuIndex: (menuIndex) => set({ menuIndex }),
   selectProject: (selectedProject) => set({ selectedProject }),
   toggleLights: () => set((s) => ({ lightsOn: !s.lightsOn })),
-  toggleSound: () => set((s) => ({ soundOn: !s.soundOn })),
+  toggleSound: () => {
+    const soundOn = !get().soundOn
+    try {
+      localStorage.setItem(MUTED_KEY, soundOn ? '0' : '1')
+    } catch {
+      /* not remembered — fine */
+    }
+    set({ soundOn })
+  },
   setMusic: (musicOn) => set({ musicOn }),
   say: (text) => set((s) => ({ dialog: { text, key: (s.dialog?.key ?? 0) + 1 } })),
   closeDialog: () => set({ dialog: null }),

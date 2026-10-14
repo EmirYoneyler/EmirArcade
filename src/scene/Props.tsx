@@ -25,7 +25,7 @@ export default function Props() {
   return (
     <group>
       {/* back wall */}
-      <group position={[0, 2.78, BACK + 0.035]}>
+      <group position={[-1.8, 2.72, BACK + 0.035]}>
         <Interactive id="clock" enabled={on} lift={0}>
           <WallClock />
         </Interactive>
@@ -33,7 +33,7 @@ export default function Props() {
       <Interactive id="window" enabled={on} lift={0}>
         <NightWindow wallZ={BACK} />
       </Interactive>
-      <group position={[-2.85, 1.78, BACK + 0.03]}>
+      <group position={[-2.95, 1.7, BACK + 0.03]}>
         <Interactive id="cork" enabled={on} lift={0.02}>
           <CorkBoard />
         </Interactive>

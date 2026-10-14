@@ -1,0 +1,109 @@
+{
+  "hash": "669a7450",
+  "configHash": "e866e99d",
+  "lockfileHash": "d06a8c3f",
+  "browserHash": "a428ebb9",
+  "optimized": {
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "c56d9262",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "59cb2048",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "f375ade8",
+      "needsInterop": true
+    },
+    "zustand": {
+      "src": "../../node_modules/zustand/esm/index.mjs",
+      "file": "zustand.js",
+      "fileHash": "b41e436e",
+      "needsInterop": false
+    },
+    "howler": {
+      "src": "../../node_modules/howler/dist/howler.js",
+      "file": "howler.js",
+      "fileHash": "18ee193c",
+      "needsInterop": true
+    },
+    "@react-three/fiber": {
+      "src": "../../node_modules/@react-three/fiber/dist/react-three-fiber.esm.js",
+      "file": "@react-three_fiber.js",
+      "fileHash": "4c4380f9",
+      "needsInterop": false
+    },
+    "@react-three/drei": {
+      "src": "../../node_modules/@react-three/drei/index.js",
+      "file": "@react-three_drei.js",
+      "fileHash": "924de876",
+      "needsInterop": false
+    },
+    "three": {
+      "src": "../../node_modules/three/build/three.module.js",
+      "file": "three.js",
+      "fileHash": "8ce7b38a",
+      "needsInterop": false
+    },
+    "@react-three/postprocessing": {
+      "src": "../../node_modules/@react-three/postprocessing/dist/index.js",
+      "file": "@react-three_postprocessing.js",
+      "fileHash": "02daaef3",
+      "needsInterop": false
+    },
+    "gsap": {
+      "src": "../../node_modules/gsap/index.js",
+      "file": "gsap.js",
+      "fileHash": "cda7344d",
+      "needsInterop": false
+    },
+    "postprocessing": {
+      "src": "../../node_modules/postprocessing/build/index.js",
+      "file": "postprocessing.js",
+      "fileHash": "d8627588",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "hls-FMPZDLL6": {
+      "file": "hls-FMPZDLL6.js"
+    },
+    "vision_bundle-EJYKSMNM": {
+      "file": "vision_bundle-EJYKSMNM.js"
+    },
+    "chunk-JX5S4TE2": {
+      "file": "chunk-JX5S4TE2.js"
+    },
+    "chunk-SK47TUVR": {
+      "file": "chunk-SK47TUVR.js"
+    },
+    "chunk-3GYQJNKX": {
+      "file": "chunk-3GYQJNKX.js"
+    },
+    "chunk-5MHJPRFC": {
+      "file": "chunk-5MHJPRFC.js"
+    },
+    "chunk-7QMPSJHM": {
+      "file": "chunk-7QMPSJHM.js"
+    },
+    "chunk-66GKV56J": {
+      "file": "chunk-66GKV56J.js"
+    },
+    "chunk-MMHWJNRC": {
+      "file": "chunk-MMHWJNRC.js"
+    },
+    "chunk-TWJRYSII": {
+      "file": "chunk-TWJRYSII.js"
+    },
+    "chunk-DC5AMYBS": {
+      "file": "chunk-DC5AMYBS.js"
+    }
+  }
+}

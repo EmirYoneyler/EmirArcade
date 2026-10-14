@@ -1,6 +1,7 @@
 import { projects } from './data/content'
 import { useApp } from './store/useApp'
 import { flyTo } from './cameraBridge'
+import { byteLines } from './data/content'
 
 /**
  * High-level navigation. UI, keyboard and 3D all call these — never flyTo
@@ -11,27 +12,38 @@ const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)')
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
 const get = useApp.getState
 
+/** Game-start hook, registered by the 3D scene (keeps game code out of the UI bundle). */
+let onGameStart: (() => 'rally' | 'patrol') | null = null
+export const registerGameStart = (fn: typeof onGameStart) => void (onGameStart = fn)
+
 export async function pressStart() {
   if (get().view !== 'room') return
+  const game = onGameStart?.() ?? 'rally'
   get().setView('cabinet')
+  get().say(game === 'rally' ? byteLines.rally : byteLines.patrol)
   await flyTo('cabinet')
 }
 
-export function moveMenu(delta: number) {
-  if (get().view !== 'cabinet') return
-  const n = projects.length
-  get().setMenuIndex((get().menuIndex + delta + n) % n)
-}
-
-/** Pick a cartridge: title card on the CRT, then dive into the glass. */
+/**
+ * Pick a tape: it flies from the rack into EMIR-1's deck, the CRT reads
+ * it, then the camera dives into the glass. Works from the room too.
+ */
 export async function chooseProject(index = get().menuIndex) {
+  if (get().view === 'room') {
+    get().setMenuIndex(index)
+    onGameStart?.()
+    get().setView('cabinet')
+    await flyTo('cabinet')
+  }
   if (get().view !== 'cabinet') return
   const s = get()
   s.setMenuIndex(index)
+  s.setTapeHover(null)
   s.selectProject(projects[index].id)
   s.setView('loading')
 
-  await wait(reduceMotion() ? 500 : 1500)
+  // tape flight into the deck (~1.1s) + a beat of the CRT reading it
+  await wait(reduceMotion() ? 600 : 2300)
   if (get().view !== 'loading') return // user backed out
 
   const dive = flyTo('screen', 1.0, 'power2.in')

@@ -79,7 +79,27 @@ export function beat() {
   return 1 - ((ctx.currentTime % (STEP * 2)) / (STEP * 2))
 }
 
+/*
+ * Browsers only allow audio after the visitor interacts with the page, so the
+ * music waits for the first click, key press or tap, then starts right away.
+ */
+let unlocked = false
+let pendingStart = false
+if (typeof window !== 'undefined') {
+  const unlock = () => {
+    unlocked = true
+    ;['pointerdown', 'keydown', 'touchstart'].forEach((e) => window.removeEventListener(e, unlock, true))
+    if (pendingStart) startMusic()
+  }
+  ;['pointerdown', 'keydown', 'touchstart'].forEach((e) => window.addEventListener(e, unlock, true))
+}
+
 export function startMusic() {
+  if (!unlocked) {
+    pendingStart = true
+    return
+  }
+  pendingStart = false
   if (!ctx) {
     ctx = new AudioContext()
     master = ctx.createGain()
@@ -97,6 +117,7 @@ export function startMusic() {
 }
 
 export function stopMusic() {
+  pendingStart = false
   if (timer !== null) window.clearInterval(timer)
   timer = null
 }

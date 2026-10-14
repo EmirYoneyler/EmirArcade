@@ -1,11 +1,14 @@
-import { useEffect, useMemo } from 'react'
-import { CanvasTexture, ExtrudeGeometry, SRGBColorSpace } from 'three'
+import { useEffect, useMemo, useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
+import { CanvasTexture, ExtrudeGeometry, SRGBColorSpace, type Group, type Mesh } from 'three'
 import { RoundedBox } from '@react-three/drei'
 import { PALETTE, LIGHT } from '../../theme/palette'
 import { Toon, Glow } from '../materials/toon'
 import CrtScreen from '../crt/CrtScreen'
 import type { ProgramName } from '../crt/registry'
 import { PROFILE, ANCHORS, RECESS, offsetPolygon, toShape } from '../geometry/cabinetProfile'
+import { DECK_LOCAL_X } from '../../config/camera'
+import { tapeState } from '../tapeState'
 
 export type CabinetPaint = {
   side: string // side panels
@@ -20,6 +23,8 @@ type Props = {
   program: ProgramName
   width?: number
   twoPlayer?: boolean
+  /** built-in cassette deck on the right of the control panel (EMIR-1) */
+  deck?: boolean
   screenRes?: [number, number]
   screenFps?: number
   screenPixelScale?: number
@@ -107,10 +112,86 @@ function Buttons({ x, colors }: { x: number; colors: string[] }) {
 }
 
 /**
+ * Cassette deck set into the control panel (panel-local: +y up out of the
+ * panel, +z toward the player). The lid opens while a tape goes in or out;
+ * the PLAY key stays down and a lamp glows while a tape is running.
+ */
+function TapeDeck() {
+  const lid = useRef<Group>(null)
+  const play = useRef<Mesh>(null)
+  const lamp = useRef<Mesh>(null)
+  useFrame(() => {
+    lid.current!.rotation.x = -tapeState.lid * 1.15
+    play.current!.position.y = tapeState.playing ? 0.05 : 0.056
+    lamp.current!.visible = tapeState.playing
+  })
+  const W = 0.25
+  const D = 0.18
+  return (
+    <group>
+      {/* well: floor + four walls, open on top */}
+      <mesh position={[0, 0.006, 0]}>
+        <boxGeometry args={[W, 0.012, D]} />
+        <Toon color={PALETTE.bg} />
+      </mesh>
+      {[-1, 1].map((s) => (
+        <mesh key={`z${s}`} position={[0, 0.025, s * (D / 2 - 0.015)]}>
+          <boxGeometry args={[W, 0.05, 0.03]} />
+          <Toon color={PALETTE.bg} />
+        </mesh>
+      ))}
+      {[-1, 1].map((s) => (
+        <mesh key={`x${s}`} position={[s * (W / 2 - 0.0175), 0.025, 0]}>
+          <boxGeometry args={[0.035, 0.05, D - 0.06]} />
+          <Toon color={PALETTE.bg} />
+        </mesh>
+      ))}
+      {/* label strip on the front edge */}
+      <mesh position={[-0.05, 0.0505, D / 2 - 0.015]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[0.1, 0.016]} />
+        <Toon color={PALETTE.mustard} />
+      </mesh>
+      {/* piano keys: REW · PLAY · EJECT */}
+      {[0.035, 0.07, 0.105].map((x, i) => (
+        <mesh key={x} ref={i === 1 ? play : undefined} position={[x - 0.02, 0.056, D / 2 - 0.015]}>
+          <boxGeometry args={[0.028, 0.012, 0.024]} />
+          <Toon color={i === 1 ? PALETTE.rust : PALETTE.cream} />
+        </mesh>
+      ))}
+      <mesh ref={lamp} position={[0.105, 0.051, D / 2 - 0.035]}>
+        <sphereGeometry args={[0.006, 8, 6]} />
+        <Glow color={PALETTE.amber} strength={2.4} />
+      </mesh>
+      {/* lid hinged at the back edge, smoked window so the tape shows */}
+      <group ref={lid} position={[0, 0.051, -(D / 2 - 0.03)]}>
+        <group position={[0, 0.004, (D - 0.06) / 2]}>
+          {[-1, 1].map((s) => (
+            <mesh key={`lz${s}`} position={[0, 0, s * ((D - 0.06) / 2 - 0.008)]}>
+              <boxGeometry args={[W - 0.07, 0.008, 0.016]} />
+              <Toon color={PALETTE.trim} />
+            </mesh>
+          ))}
+          {[-1, 1].map((s) => (
+            <mesh key={`lx${s}`} position={[s * ((W - 0.07) / 2 - 0.008), 0, 0]}>
+              <boxGeometry args={[0.016, 0.008, D - 0.06]} />
+              <Toon color={PALETTE.trim} />
+            </mesh>
+          ))}
+          <mesh rotation={[-Math.PI / 2, 0, 0]}>
+            <planeGeometry args={[W - 0.09, D - 0.08]} />
+            <meshBasicMaterial color={PALETTE.bg} transparent opacity={0.35} depthWrite={false} />
+          </mesh>
+        </group>
+      </group>
+    </group>
+  )
+}
+
+/**
  * Upright arcade cabinet built from primitives. Origin = floor, centered,
  * facing +z. Swap this component for a .glb later; keep the same props.
  */
-export default function Cabinet({ paint, title, program, width = 1.04, twoPlayer = false, screenRes, screenFps, screenPixelScale, onScreen }: Props) {
+export default function Cabinet({ paint, title, program, width = 1.04, twoPlayer = false, deck = false, screenRes, screenFps, screenPixelScale, onScreen }: Props) {
   const geo = sharedGeo()
   const marquee = useMarqueeTexture(title, paint)
   const W = width
@@ -202,7 +283,15 @@ export default function Cabinet({ paint, title, program, width = 1.04, twoPlayer
 
       {/* control panel */}
       <group position={[0, P.y + 0.004, P.z]} rotation={[Math.PI / 2 - P.tilt, 0, 0]}>
-        {twoPlayer ? (
+        {deck ? (
+          <>
+            <Joystick x={-0.3} ball={PALETTE.rust} />
+            <Buttons x={-0.18} colors={buttonColors} />
+            <group position={[DECK_LOCAL_X, 0, 0]}>
+              <TapeDeck />
+            </group>
+          </>
+        ) : twoPlayer ? (
           <>
             <Joystick x={-0.36} ball={PALETTE.rust} />
             <Buttons x={-0.24} colors={buttonColors} />

@@ -9,8 +9,8 @@ export const SECRETS = {
   sign: 'Open sign',
   plant: 'Potted plant',
   switch: 'Light switch',
-  rally: 'RALLY cabinet',
-  patrol: 'PATROL cabinet',
+  rally: 'Scored in RALLY',
+  patrol: 'Hit in PATROL',
   konami: 'Konami code',
 } as const
 
