@@ -40,7 +40,7 @@ export default function PendantLamp({ position = [0.2, 3.4, 0.4] as [number, num
       {/* shade */}
       <mesh position={[0, 0.02, 0]}>
         <cylinderGeometry args={[0.1, 0.42, 0.34, 20, 1, true]} />
-        <meshToonMaterial color={PALETTE.mustard} side={2} emissive={PALETTE.mustard} emissiveIntensity={0.25} />
+        <meshToonMaterial color={PALETTE.mustard} side={2} emissive={PALETTE.mustard} emissiveIntensity={lightsOn ? 0.25 : 0.02} />
       </mesh>
       <mesh position={[0, 0.2, 0]}>
         <cylinderGeometry args={[0.1, 0.1, 0.06, 12]} />
@@ -49,7 +49,7 @@ export default function PendantLamp({ position = [0.2, 3.4, 0.4] as [number, num
       {/* bulb */}
       <mesh position={[0, -0.12, 0]}>
         <sphereGeometry args={[0.1, 14, 10]} />
-        <Glow color={LIGHT.tungsten} strength={3} />
+        <Glow color={LIGHT.tungsten} strength={lightsOn ? 3 : 0.35} />
       </mesh>
       <spotLight
         ref={spot}

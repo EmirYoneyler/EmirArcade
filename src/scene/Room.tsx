@@ -6,8 +6,7 @@ import { Toon } from './materials/toon'
 
 const { w: W, d: D, h: H, wallT: T } = ROOM
 
-/** Window opening on the back wall (x range, y range). */
-export const WINDOW = { x0: 1.5, x1: 3.5, y0: 2.1, y1: 3.2 }
+import { WINDOW } from './parts/NightWindow'
 
 /** Seeded RNG so the floor is "random" but identical every load. */
 function rng(seed: number) {
@@ -120,32 +119,6 @@ function LeftWall() {
   )
 }
 
-/** Chunky window frame + night backdrop. Skyline arrives in Phase 4. */
-function WindowFrame() {
-  const { x0, x1, y0, y1 } = WINDOW
-  const cx = (x0 + x1) / 2
-  const cy = (y0 + y1) / 2
-  const w = x1 - x0
-  const h = y1 - y0
-  const z = -D / 2 + 0.02
-  const bar = 0.09
-  return (
-    <group position={[cx, cy, z]}>
-      {/* night backdrop sits behind the wall plane */}
-      <mesh position={[0, 0, -0.5]}>
-        <planeGeometry args={[w + 0.2, h + 0.2]} />
-        <meshBasicMaterial color={PALETTE.bg} />
-      </mesh>
-      <mesh position={[0, h / 2 + bar / 2, 0.02]}><boxGeometry args={[w + bar * 2, bar, 0.2]} /><Toon color={PALETTE.trim} /></mesh>
-      <mesh position={[0, -h / 2 - bar / 2 - 0.03, 0.06]}><boxGeometry args={[w + bar * 3, bar * 1.4, 0.3]} /><Toon color={PALETTE.trim} /></mesh>
-      <mesh position={[-w / 2 - bar / 2, 0, 0.02]}><boxGeometry args={[bar, h, 0.2]} /><Toon color={PALETTE.trim} /></mesh>
-      <mesh position={[w / 2 + bar / 2, 0, 0.02]}><boxGeometry args={[bar, h, 0.2]} /><Toon color={PALETTE.trim} /></mesh>
-      <mesh position={[0, 0, 0.02]}><boxGeometry args={[0.06, h, 0.1]} /><Toon color={PALETTE.trim} /></mesh>
-      <mesh position={[0, 0, 0.02]}><boxGeometry args={[w, 0.06, 0.1]} /><Toon color={PALETTE.trim} /></mesh>
-    </group>
-  )
-}
-
 /** A round rug to anchor the room. */
 function Rug() {
   return (
@@ -172,7 +145,6 @@ export default function Room() {
       <Floor />
       <BackWall />
       <LeftWall />
-      <WindowFrame />
       <Rug />
     </group>
   )

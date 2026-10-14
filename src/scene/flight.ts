@@ -34,3 +34,5 @@ export function flyTo(name: PoseName, duration = 1.2, ease = 'power3.inOut'): Pr
       .to(livePose, { fov: p.fov, parallax: PARALLAX[name], fit: FIT[name] }, 0)
   })
 }
+
+if (import.meta.env.DEV) (window as unknown as { __gsap: typeof gsap }).__gsap = gsap

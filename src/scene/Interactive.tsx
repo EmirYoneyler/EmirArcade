@@ -3,24 +3,25 @@ import { useFrame, type ThreeEvent } from '@react-three/fiber'
 import { Select } from '@react-three/postprocessing'
 import type { Group } from 'three'
 import { useApp } from '../store/useApp'
+import { activate, objectName, type ObjectId } from './actions'
 
 type Props = {
-  name: string
-  onActivate: () => void
+  id: ObjectId
   enabled?: boolean
   lift?: number
   children: ReactNode
 }
 
 /**
- * Wraps any prop to make it interactive: outline + small lift on hover,
- * cursor tooltip with its name, click to activate.
+ * Makes any prop interactive: soft outline + small lift on hover (or on
+ * keyboard focus via the Tab mirror), cursor tooltip, click to activate.
  */
-export default function Interactive({ name, onActivate, enabled = true, lift = 0.03, children }: Props) {
+export default function Interactive({ id, enabled = true, lift = 0.03, children }: Props) {
   const ref = useRef<Group>(null)
   const [hover, setHover] = useState(false)
+  const focused = useApp((s) => s.focused === id)
   const setHovered = useApp((s) => s.setHovered)
-  const active = hover && enabled
+  const active = (hover || focused) && enabled
 
   useFrame((_, dt) => {
     const g = ref.current
@@ -33,7 +34,7 @@ export default function Interactive({ name, onActivate, enabled = true, lift = 0
     e.stopPropagation()
     setHover(true)
     if (enabled) {
-      setHovered(name)
+      setHovered(objectName(id))
       document.body.style.cursor = 'pointer'
     }
   }
@@ -52,8 +53,7 @@ export default function Interactive({ name, onActivate, enabled = true, lift = 0
         onClick={(e) => {
           if (!enabled) return
           e.stopPropagation()
-          out()
-          onActivate()
+          activate(id)
         }}
       >
         {children}

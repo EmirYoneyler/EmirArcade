@@ -120,3 +120,56 @@ export const site = {
   url: 'https://emir-arcade.vercel.app',
   ogImage: '/og.png',
 }
+
+/** CV shown when the cork board is clicked (and in the classic view). */
+export const cv = {
+  education: [
+    { title: 'B.Sc. Computer Science', place: 'Istanbul Aydın University', when: 'in progress' },
+  ],
+  experience: [
+    {
+      title: 'Software Engineering Intern',
+      place: 'AI photo booth',
+      when: 'current',
+      detail: 'Face-swap pipeline on Modal.com: 5–10 AI portrait templates per guest in ~10 seconds.',
+    },
+    {
+      title: 'Freelance Web Developer',
+      place: 'Self-employed',
+      when: 'ongoing',
+      detail: 'Backends and sites for clients — e.g. a Go/Fiber backend and admin CMS for a Kazakhstan logistics company.',
+    },
+  ],
+  focus: ['Backend: Java / Spring Boot, Go / Fiber', 'Full-stack: React, Python / FastAPI', 'Data: PostgreSQL', 'Ops: Docker, Render, Modal'],
+}
+
+/**
+ * BYTE's lines. {x} placeholders are filled in at runtime.
+ * Keep them short — the dialog box types them out letter by letter.
+ */
+export const byteLines = {
+  welcome: "Hi, I'm BYTE. Emir built this place. Poke around — almost everything does something.",
+  claw: 'Got one! {skill}. Emir used it in: {projects}.',
+  clawNone: "Got one! {skill}. It's in the toolbox — just waiting for the right project.",
+  jukeboxOn: 'Original chiptune — Emir wrote it. No copyrights were harmed.',
+  jukeboxMuted: "It's playing… but sound is off. Hit the speaker up in the corner.",
+  jukeboxOff: 'Ahh, silence. The cat approves.',
+  cat: ['Mrrp.', "That's Kernel. She's in sleep mode.", "Kernel doesn't do standups."],
+  clock: "It's {time} in Istanbul right now.",
+  window: 'Make a wish. Mine is more RAM.',
+  cork: "Emir's CV. Pinned it up so it doesn't get lost.",
+  sign: "Yes — Emir's open for work. Here's how to reach him.",
+  plant: ['The plant is thriving. Mostly on screen light.', 'Watered by the monitor glow. Allegedly.'],
+  switchOff: 'Lights out. Screens only — the proper way to play.',
+  switchOn: "Lights back on. Don't tell the cat.",
+  rally: 'RALLY. High score: 7. Set by the cat, somehow.',
+  patrol: "PATROL. They've been marching since 1981. Never once landed.",
+  konami: 'Cheat code accepted. +30 lives. Emir would be proud.',
+  allSecrets: "That's all 12 secrets. You're officially a regular here.",
+}
+
+export const contact = {
+  pitch: 'Open to internships, junior backend roles and freelance projects.',
+  email: about.email,
+  links: about.github,
+}

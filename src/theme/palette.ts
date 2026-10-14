@@ -29,3 +29,11 @@ export const LIGHT = {
 
 /** Boost applied to emissive colors so only they cross the bloom threshold. */
 export const GLOW = 2.4
+
+/** Blend two palette colors (for haze/water tints) — keeps every pixel palette-derived. */
+export function mix(a: string, b: string, k: number) {
+  const pa = parseInt(a.slice(1), 16)
+  const pb = parseInt(b.slice(1), 16)
+  const ch = (s: number) => Math.round(((pa >> s) & 255) * (1 - k) + ((pb >> s) & 255) * k)
+  return `#${((ch(16) << 16) | (ch(8) << 8) | ch(0)).toString(16).padStart(6, '0')}`
+}

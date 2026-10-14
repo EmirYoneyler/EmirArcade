@@ -1,5 +1,6 @@
 import { PALETTE } from '../../theme/palette'
 import { drawByte, BYTE_W } from './byte'
+import { useApp } from '../../store/useApp'
 
 /** Everything on a CRT is amber phosphor on black. */
 export const INK = PALETTE.amber
@@ -96,6 +97,11 @@ export const attract: Program = (ctx, w, h, { t, look }) => {
     paper: BLACK,
   })
 
+  if (useApp.getState().cheat) {
+    ctx.fillStyle = INK
+    ctx.fillRect(0, 100, w, 14)
+    text(ctx, 'CHEAT ON  ·  +30 LIVES', w / 2, 107, 8, 'center', BLACK)
+  }
   if (t % 1 < 0.62) text(ctx, 'PRESS START', w / 2, 212, 16)
   text(ctx, 'CREDIT 00', w - 8, h - 8, 8, 'right', DIM)
   text(ctx, '© EMIR', 8, h - 8, 8, 'left', DIM)

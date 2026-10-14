@@ -5,6 +5,7 @@ import { POSES } from '../config/camera'
 import { Selection } from '@react-three/postprocessing'
 import Room from './Room'
 import Arcade from './Arcade'
+import Props from './Props'
 import Lighting from './Lighting'
 import CameraRig from './CameraRig'
 import Effects from './Effects'
@@ -29,6 +30,7 @@ export default function Scene() {
         <Lighting />
         <Room />
         <Arcade />
+        <Props />
         <CameraRig />
         <Effects />
       </Selection>

@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react'
-import { projects } from '../data/content'
+import { projects, byteLines } from '../data/content'
+import { OBJECTS, activate } from '../scene/actions'
+import { sfx } from '../audio/sfx'
 import { useApp } from '../store/useApp'
 import { pressStart, goBack, moveMenu, chooseProject, stepProject } from '../flow'
 
@@ -47,6 +49,26 @@ function MenuMirror() {
   )
 }
 
+/** Tab mirror of every object in the room — keyboard & screen-reader access. */
+function RoomMirror() {
+  const setFocused = useApp((s) => s.setFocused)
+  return (
+    <nav className="sr-only" aria-label="Objects in the arcade">
+      <ul>
+        {OBJECTS.map((o) => (
+          <li key={o.id}>
+            <button onFocus={() => setFocused(o.id)} onBlur={() => setFocused(null)} onClick={() => activate(o.id)}>
+              {o.name}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a']
+
 const typing = () => {
   const el = document.activeElement
   return el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement
@@ -55,12 +77,38 @@ const typing = () => {
 export default function Hud() {
   const view = useApp((s) => s.view)
 
+  // BYTE says hello once the room is up
   useEffect(() => {
+    const unsub = useApp.subscribe((s, prev) => {
+      if (s.ready && !prev.ready) setTimeout(() => useApp.getState().view === 'room' && useApp.getState().say(byteLines.welcome), 1400)
+    })
+    return unsub
+  }, [])
+
+  useEffect(() => {
+    let k = 0
     const onKey = (e: KeyboardEvent) => {
       if (typing()) return
-      const v = useApp.getState().view
-      if (e.key === 'Escape') return void goBack()
-      if (v === 'room' && e.key === 'Enter' && document.activeElement === document.body) pressStart()
+      // Konami code works anywhere
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key
+      k = key === KONAMI[k] ? k + 1 : key === KONAMI[0] ? 1 : 0
+      if (k === KONAMI.length) {
+        k = 0
+        const s = useApp.getState()
+        s.discover('konami')
+        sfx('secret')
+        s.say(byteLines.konami)
+        s.setCheat(true)
+        setTimeout(() => useApp.getState().setCheat(false), 12000)
+        return
+      }
+      const st = useApp.getState()
+      const v = st.view
+      if (e.key === 'Escape') {
+        if (st.panel) return void st.setPanel(null)
+        return void goBack()
+      }
+      if (v === 'room' && e.key === 'Enter' && document.activeElement === document.body && !st.panel) pressStart()
       if (v === 'cabinet') {
         if (e.key === 'ArrowUp') (e.preventDefault(), moveMenu(-1))
         if (e.key === 'ArrowDown') (e.preventDefault(), moveMenu(1))
@@ -79,6 +127,7 @@ export default function Hud() {
   return (
     <>
       <Tooltip />
+      {view === 'room' && <RoomMirror />}
       {view === 'cabinet' && <MenuMirror />}
       {view === 'room' && (
         <button className="hud-btn hud-btn--start" onClick={pressStart}>

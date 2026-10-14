@@ -4,6 +4,10 @@ import { about } from './data/content'
 import { useApp } from './store/useApp'
 import Hud from './ui/Hud'
 import ProjectPage from './ui/ProjectPage'
+import DialogBox from './ui/DialogBox'
+import Panels from './ui/Panels'
+import Corner from './ui/Corner'
+import './audio/chiptune'
 
 // 3D bundle is code-split so first paint stays light.
 const Scene = lazy(() => import('./scene/Scene'))
@@ -33,6 +37,9 @@ export default function App() {
         <Scene />
       </Suspense>
       <Hud />
+      <Corner />
+      <DialogBox />
+      <Panels />
       <ProjectPage />
       <Boot />
     </>

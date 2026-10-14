@@ -3,7 +3,7 @@ import { ROOM } from '../config/camera'
 import Cabinet, { type CabinetPaint } from './parts/Cabinet'
 import Interactive from './Interactive'
 import { useApp } from '../store/useApp'
-import { pressStart, chooseProject } from '../flow'
+import { chooseProject } from '../flow'
 import { menuRowAt } from './crt/menu'
 import type { ProgramName } from './crt/registry'
 import type { View } from '../store/useApp'
@@ -53,7 +53,7 @@ export default function Arcade() {
   return (
     <group>
       <group position={[0, 0, BACK]}>
-        <Interactive name="EMIR-1" onActivate={pressStart} enabled={view === 'room'}>
+        <Interactive id="emir1" enabled={view === 'room'}>
           <Cabinet
             paint={MAIN}
             title="EMIR-1"
@@ -66,12 +66,15 @@ export default function Arcade() {
           />
         </Interactive>
       </group>
-      {/* side cabinets get their own interactions in Phase 4 */}
       <group position={[-1.62, 0, BACK - 0.04]} rotation={[0, 0.14, 0]} scale={0.94}>
-        <Cabinet paint={LEFT} title="RALLY" program="rally" width={0.92} screenFps={15} />
+        <Interactive id="rally" enabled={view === 'room'}>
+          <Cabinet paint={LEFT} title="RALLY" program="rally" width={0.92} screenFps={15} />
+        </Interactive>
       </group>
       <group position={[1.62, 0, BACK - 0.04]} rotation={[0, -0.14, 0]} scale={0.94}>
-        <Cabinet paint={RIGHT} title="PATROL" program="patrol" width={0.92} screenFps={15} />
+        <Interactive id="patrol" enabled={view === 'room'}>
+          <Cabinet paint={RIGHT} title="PATROL" program="patrol" width={0.92} screenFps={15} />
+        </Interactive>
       </group>
     </group>
   )
