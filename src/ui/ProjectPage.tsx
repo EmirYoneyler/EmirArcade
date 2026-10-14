@@ -41,7 +41,7 @@ export default function ProjectPage() {
         <article className="crt-page__content" key={p.id}>
           <header className="crt-head">
             <p className="crt-kicker">
-              CARTRIDGE {String(index + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
+              TAPE {String(index + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
               <span className="crt-status" data-status={p.status}>
                 {STATUS_LABEL[p.status]}
               </span>

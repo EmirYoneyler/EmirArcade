@@ -23,15 +23,24 @@ export function moveMenu(delta: number) {
   get().setMenuIndex((get().menuIndex + delta + n) % n)
 }
 
-/** Pick a cartridge: title card on the CRT, then dive into the glass. */
+/**
+ * Pick a tape: it flies from the rack into EMIR-1's deck, the CRT reads
+ * it, then the camera dives into the glass. Works from the room too.
+ */
 export async function chooseProject(index = get().menuIndex) {
+  if (get().view === 'room') {
+    get().setMenuIndex(index)
+    get().setView('cabinet')
+    await flyTo('cabinet')
+  }
   if (get().view !== 'cabinet') return
   const s = get()
   s.setMenuIndex(index)
   s.selectProject(projects[index].id)
   s.setView('loading')
 
-  await wait(reduceMotion() ? 500 : 1500)
+  // tape flight into the deck (~1.1s) + a beat of the CRT reading it
+  await wait(reduceMotion() ? 600 : 2300)
   if (get().view !== 'loading') return // user backed out
 
   const dive = flyTo('screen', 1.0, 'power2.in')

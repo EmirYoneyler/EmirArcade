@@ -1,9 +1,11 @@
 # EMIR-1 — a portfolio you can walk into
 
 A cozy, late-night arcade room built with React Three Fiber. Every object
-does something; the main cabinet holds the projects. A plain, fast
-**classic view** with the same content is one click away, and is what
-small or weak devices get first.
+does something. Each project is a cassette tape on the rack beside the
+main cabinet: pick one and it flies into EMIR-1's tape deck, the CRT reads
+it, and the camera dives into the screen to show the project. The site
+always opens in the arcade; a plain, fast **classic view** with the same
+content is one click away (and is what browsers without WebGL get).
 
 ```bash
 npm install
@@ -35,7 +37,7 @@ src/
   store/useApp.ts       Zustand: view, mode, dialog, secrets, sound…
   flow.ts               navigation (room → cabinet → loading → project)
   cameraBridge.ts       UI → camera without importing three.js
-  mode.ts               arcade vs classic (+ index.html inline script)
+  mode.ts               arcade first; classic only without WebGL
   App.tsx               classic view, or lazy ArcadeApp + boot screen
   ArcadeApp.tsx         arcade UI shell, lazy-loads the 3D Scene
   classic/              classic view (also pre-rendered at build time)
@@ -46,7 +48,7 @@ src/
     CameraRig.tsx flight.ts      GSAP camera moves, parallax
     Interactive.tsx actions.ts   hover/outline/tooltip, what each click does
     crt/                         CRT shader + pixel programs (attract, menu…)
-    parts/                       one component per object
+    parts/                       one component per object (Tapes.tsx: rack + tape flight)
     materials/                   toon / glow materials, canvas textures
 ```
 

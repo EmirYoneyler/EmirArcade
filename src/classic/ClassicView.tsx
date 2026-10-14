@@ -59,11 +59,8 @@ export default function ClassicView() {
               <ByteMark size={40} />
               <div>
                 <strong>This portfolio is also a tiny 3D arcade.</strong>
-                <p>You're seeing the light version because of your screen or device. It runs best on a laptop — but you can try it anyway.</p>
+                <p>Your browser doesn't support WebGL, so you're seeing the classic version. Open it in a recent Chrome, Firefox or Safari to play.</p>
               </div>
-              <button className="c-btn" onClick={() => setMode('arcade')}>
-                Try the 3D arcade
-              </button>
             </aside>
           )}
         </section>

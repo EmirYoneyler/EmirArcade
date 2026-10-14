@@ -10,19 +10,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet" />
     <script>
-      // Pick arcade vs classic before first paint (mirrors src/mode.ts).
+      // Always open in the arcade; fall back to classic only without WebGL (mirrors src/mode.ts).
       ;(function () {
-        var d = document.documentElement, m = null
-        try { m = localStorage.getItem('emir-arcade:view') } catch (e) {}
-        if (m !== 'arcade' && m !== 'classic') {
-          var n = navigator, gl = false
-          try { gl = !!document.createElement('canvas').getContext('webgl2') } catch (e) {}
-          var weak = innerWidth < 768 || (n.connection && n.connection.saveData) ||
-            (n.hardwareConcurrency || 8) <= 2 || (n.deviceMemory || 8) <= 2
-          m = weak || !gl ? 'classic' : 'arcade'
-          d.dataset.auto = '1'
-        }
-        d.dataset.mode = m
+        var d = document.documentElement, gl = false
+        try { gl = !!document.createElement('canvas').getContext('webgl2') } catch (e) {}
+        d.dataset.mode = gl ? 'arcade' : 'classic'
+        if (!gl) d.dataset.auto = '1'
       })()
     </script>
   </head>

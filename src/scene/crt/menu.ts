@@ -49,8 +49,8 @@ export const menu: Program = (ctx, w, h, { t, look }) => {
   ctx.fillStyle = BLACK
   ctx.fillRect(0, 0, w, h)
 
-  text(ctx, 'SELECT GAME', 16, 22, 16, 'left', INK, true)
-  text(ctx, `${projects.length} CARTRIDGES`, 17, 38, 8, 'left', DIM)
+  text(ctx, 'INSERT A TAPE', 16, 22, 16, 'left', INK, true)
+  text(ctx, `${projects.length} TAPES ON THE RACK  >>`, 17, 38, 8, 'left', DIM)
   drawByte(ctx, {
     x: w - BYTE_W * 2 - 14,
     y: 8,
@@ -88,21 +88,46 @@ export const menu: Program = (ctx, w, h, { t, look }) => {
   tri(ctx, 20, 222, 'up', DIM)
   tri(ctx, 28, 226, 'down', DIM)
   text(ctx, 'CHOOSE', 36, 225, 8, 'left', DIM)
-  text(ctx, 'ENTER START', w / 2 + 8, 225, 8, 'center', DIM)
+  text(ctx, 'CLICK A TAPE / ENTER', w / 2 + 14, 225, 8, 'center', DIM)
   text(ctx, 'ESC BACK', w - 16, 225, 8, 'right', DIM)
 }
 
-const LOAD_SECONDS = 1.4
+/** Spinning cassette reel, drawn in pixels. */
+function reel(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number, angle: number) {
+  ctx.fillStyle = INK
+  for (let k = 0; k < 48; k++) {
+    const a = (k / 48) * Math.PI * 2
+    ctx.fillRect(Math.round(cx + Math.cos(a) * r), Math.round(cy + Math.sin(a) * r), 2, 2)
+  }
+  for (let s = 0; s < 3; s++) {
+    const a = angle + (s / 3) * Math.PI * 2
+    for (let d = 3; d < r - 2; d += 2) ctx.fillRect(Math.round(cx + Math.cos(a) * d), Math.round(cy + Math.sin(a) * d), 2, 2)
+  }
+  ctx.fillRect(cx - 2, cy - 2, 4, 4)
+}
 
-/** Title card + progress bar while the camera dives in. */
-export const loading: Program = (ctx, w, h, { t, look }) => {
+/** Seconds the tape takes to travel from the rack into the deck. */
+const INSERT_SECONDS = 1.1
+const READ_SECONDS = 1.1
+
+/** The tape going in, then being read: title card + spinning reels + progress. */
+export const loading: Program = (ctx, w, h, { t }) => {
   const id = useApp.getState().selectedProject
   const i = Math.max(0, projects.findIndex((p) => p.id === id))
   const p = projects[i]
   ctx.fillStyle = BLACK
   ctx.fillRect(0, 0, w, h)
 
-  text(ctx, `STAGE ${String(i + 1).padStart(2, '0')}`, w / 2, 34, 8, 'center', DIM)
+  if (t < INSERT_SECONDS) {
+    // waiting for the tape to land in the deck
+    text(ctx, 'INSERTING TAPE', w / 2, 70, 16, 'center', INK, true)
+    text(ctx, `TAPE ${String(i + 1).padStart(2, '0')}  ·  ${p.cartridge}`, w / 2, 96, 8, 'center', DIM)
+    drawByte(ctx, { x: w / 2 - 32, y: 124, s: 4, look: { x: 0.8, y: -0.8 }, blink: false, step: 0, antenna: true, ink: INK, paper: BLACK })
+    return
+  }
+  const k = Math.min(1, (t - INSERT_SECONDS) / READ_SECONDS)
+
+  text(ctx, `TAPE ${String(i + 1).padStart(2, '0')}  ·  SIDE A`, w / 2, 26, 8, 'center', DIM)
   // big title, shrinks to fit
   let size = 32
   ctx.font = `bold ${size}px Silkscreen`
@@ -110,35 +135,32 @@ export const loading: Program = (ctx, w, h, { t, look }) => {
     size -= 8
     ctx.font = `bold ${size}px Silkscreen`
   }
-  text(ctx, p.cartridge, w / 2 + 2, 82, size, 'center', DIM, true)
-  text(ctx, p.cartridge, w / 2, 80, size, 'center', INK, true)
+  text(ctx, p.cartridge, w / 2 + 2, 62, size, 'center', DIM, true)
+  text(ctx, p.cartridge, w / 2, 60, size, 'center', INK, true)
   wrap(ctx, p.pitch.toUpperCase(), w - 60)
     .slice(0, 2)
-    .forEach((line, k) => text(ctx, line, w / 2, 112 + k * 11, 8, 'center', DIM))
+    .forEach((line, n) => text(ctx, line, w / 2, 90 + n * 11, 8, 'center', DIM))
+
+  // cassette window: two reels, tape running between them
+  const spin = t * 7
+  ctx.fillStyle = FAINT
+  ctx.fillRect(w / 2 - 70, 122, 140, 42)
+  ctx.fillStyle = DIM
+  ctx.fillRect(w / 2 - 34, 142, 68, 2)
+  reel(ctx, w / 2 - 44, 143, 15, spin)
+  reel(ctx, w / 2 + 44, 143, 15, spin * 0.85)
 
   // progress bar, chunky segments
-  const k = Math.min(1, t / LOAD_SECONDS)
   const bx = 60
   const bw = w - 120
   ctx.fillStyle = DIM
-  ctx.fillRect(bx - 2, 168, bw + 4, 1)
-  ctx.fillRect(bx - 2, 179, bw + 4, 1)
+  ctx.fillRect(bx - 2, 178, bw + 4, 1)
+  ctx.fillRect(bx - 2, 189, bw + 4, 1)
   const segs = 20
   for (let s = 0; s < Math.floor(k * segs); s++) {
     ctx.fillStyle = INK
-    ctx.fillRect(bx + (s * bw) / segs + 1, 171, bw / segs - 2, 6)
+    ctx.fillRect(bx + (s * bw) / segs + 1, 181, bw / segs - 2, 6)
   }
-  drawByte(ctx, {
-    x: bx + k * bw - BYTE_W,
-    y: 136 + (Math.floor(t * 8) % 2),
-    s: 2,
-    look,
-    blink: false,
-    step: (Math.floor(t * 8) % 2) as 0 | 1,
-    antenna: true,
-    ink: INK,
-    paper: BLACK,
-  })
-  text(ctx, k < 1 ? 'LOADING' + '.'.repeat(Math.floor(t * 4) % 4) : 'READY!', w / 2, 200, 8, 'center', INK)
-  text(ctx, p.status, w / 2, h - 16, 8, 'center', DIM)
+  text(ctx, k < 1 ? 'READING TAPE' + '.'.repeat(Math.floor(t * 4) % 4) : 'PLAY', w / 2, 206, 8, 'center', INK)
+  text(ctx, p.status, w / 2, h - 14, 8, 'center', DIM)
 }

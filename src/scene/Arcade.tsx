@@ -1,6 +1,7 @@
 import { PALETTE } from '../theme/palette'
 import { ROOM } from '../config/camera'
 import Cabinet, { type CabinetPaint } from './parts/Cabinet'
+import Tapes from './parts/Tapes'
 import Interactive from './Interactive'
 import { useApp } from '../store/useApp'
 import { chooseProject } from '../flow'
@@ -59,7 +60,7 @@ export default function Arcade() {
             title="EMIR-1"
             program={MAIN_PROGRAM[view]}
             width={1.08}
-            twoPlayer
+            deck
             screenRes={[640, 480]}
             screenPixelScale={2}
             screenFps={view === 'room' ? 20 : 30}
@@ -77,6 +78,7 @@ export default function Arcade() {
           <Cabinet paint={RIGHT} title="PATROL" program="patrol" width={0.92} screenFps={15} />
         </Interactive>
       </group>
+      <Tapes />
     </group>
   )
 }
