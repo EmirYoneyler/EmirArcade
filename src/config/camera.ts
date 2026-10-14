@@ -34,6 +34,8 @@ export const POSES = {
   room: pose([7.4, 5.2, 8.4], [0.15, 1.1, -0.2]),
   // frames the screen, the control-panel tape deck and the tape rack beside it
   cabinet: pose([0.68, 2.3, 1.8], [0.68, 1.88, -2.3], 30),
+  // portrait phones: closer and wider, centred on the screen (tapes get an on-screen strip instead)
+  cabinetNarrow: pose([0.05, 2.12, 0.75], [0.05, 1.92, -2.3], 52),
   // straight down the screen normal, close enough that the glass overfills the view
   screen: {
     position: SCREEN_CENTER.clone().addScaledVector(screenNormal, 0.45 * CABINET_SCALE),

@@ -7,6 +7,7 @@ import { Toon } from './materials/toon'
 const { w: W, d: D, h: H, wallT: T } = ROOM
 
 import { WINDOW } from './parts/NightWindow'
+import TurkishRug from './parts/TurkishRug'
 
 /** Seeded RNG so the floor is "random" but identical every load. */
 function rng(seed: number) {
@@ -119,33 +120,13 @@ function LeftWall() {
   )
 }
 
-/** A round rug to anchor the room. */
-function Rug() {
-  return (
-    <group position={[0.1, 0.012, 1.1]} rotation={[0, 0.0, 0]}>
-      <mesh receiveShadow>
-        <cylinderGeometry args={[1.5, 1.5, 0.02, 40]} />
-        <Toon color={PALETTE.rust} />
-      </mesh>
-      <mesh position={[0, 0.012, 0]}>
-        <cylinderGeometry args={[1.15, 1.15, 0.02, 40]} />
-        <Toon color={PALETTE.trim} />
-      </mesh>
-      <mesh position={[0, 0.024, 0]}>
-        <cylinderGeometry args={[0.75, 0.75, 0.02, 40]} />
-        <Toon color={PALETTE.teal} />
-      </mesh>
-    </group>
-  )
-}
-
 export default function Room() {
   return (
     <group>
       <Floor />
       <BackWall />
       <LeftWall />
-      <Rug />
+      <TurkishRug position={[0.15, 0.004, 1.05]} rotation={[0, 0.04, 0]} />
     </group>
   )
 }

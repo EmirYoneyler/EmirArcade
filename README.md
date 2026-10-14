@@ -59,6 +59,19 @@ self-contained with its origin on the floor (or wall), facing +z. Replace
 the primitives inside with `useGLTF('/models/x.glb')` and keep the
 component's props and its `usePulse(...)` animation hook.
 
+## Live bits
+
+- **GitHub activity**: the cork board, the CV sheet and the classic view
+  list the most recently pushed public repos of every account in
+  `about.github` (GitHub's public API, no key, cached 15 min per visitor).
+- **Contact form**: messages go straight to `contact.email` through
+  FormSubmit (no backend). The very first message sends a one-time
+  activation email to that inbox — click it once and you're done.
+- **Window**: the sky follows Istanbul time — day 08–18, dusk 06–08 and
+  18–20, night otherwise.
+- **Phones**: the cabinet close-up reframes for portrait screens, the
+  tapes appear in a tappable strip, and the games get touch buttons.
+
 ## Performance notes
 
 - First paint loads ~55 kB (gzip) of JS; three.js and friends load only in

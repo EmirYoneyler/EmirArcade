@@ -2,7 +2,8 @@ import { useRef } from 'react'
 import gsap from 'gsap'
 import type { Group } from 'three'
 import { PALETTE, mix } from '../../theme/palette'
-import { about, cv } from '../../data/content'
+import { about } from '../../data/content'
+import { useRecentRepos, ago, type RecentRepo } from '../../data/github'
 import { Toon } from '../materials/toon'
 import { useCanvasTexture, pixelFont } from '../materials/canvasTexture'
 import { usePulse } from '../usePulse'
@@ -10,7 +11,7 @@ import { usePulse } from '../usePulse'
 const W = 1.15
 const H = 0.8
 
-type PaperDraw = (ctx: CanvasRenderingContext2D, w: number, h: number) => void
+type PaperDraw = (ctx: CanvasRenderingContext2D, w: number, h: number, repos: RecentRepo[] | null) => void
 
 const ink = (ctx: CanvasRenderingContext2D, size: number, bold = false) => {
   ctx.fillStyle = PALETTE.bg
@@ -59,24 +60,32 @@ const PAPERS: { at: [number, number]; size: [number, number]; rot: number; pin: 
     },
   },
   {
-    at: [0.06, -0.24], size: [0.3, 0.2], rot: 0.03, pin: PALETTE.mustard, color: PALETTE.cream,
-    draw: (ctx, w) => {
-      ink(ctx, 12, true)
-      ctx.fillText('STACK', 14, 12)
-      ink(ctx, 10)
-      cv.focus.slice(0, 3).forEach((f, i) => ctx.fillText(f.split(':')[1]?.trim().slice(0, 22) ?? f, 14, 34 + i * 16))
-      void w
+    // live: the latest public repos Emir pushed to, straight from GitHub
+    at: [0.08, -0.23], size: [0.36, 0.25], rot: 0.03, pin: PALETTE.mustard, color: PALETTE.cream,
+    draw: (ctx, w, _h, repos) => {
+      ink(ctx, 13, true)
+      ctx.fillText('ON GITHUB', 14, 12)
+      ctx.fillRect(14, 30, w - 28, 2)
+      ink(ctx, 11)
+      if (!repos) return void ctx.fillText('loading...', 14, 42)
+      if (!repos.length) return void ['github.com/', about.github[0].label].forEach((t, i) => ctx.fillText(t, 14, 42 + i * 18))
+      repos.slice(0, 4).forEach((r, i) => {
+        ctx.textAlign = 'left'
+        ctx.fillText(r.name.slice(0, 18), 14, 42 + i * 22)
+        ctx.textAlign = 'right'
+        ctx.fillText(ago(r.pushedAt), w - 14, 42 + i * 22)
+      })
     },
   },
 ]
 
-function Paper({ p, refFn }: { p: (typeof PAPERS)[number]; refFn: (g: Group | null) => void }) {
+function Paper({ p, refFn, repos }: { p: (typeof PAPERS)[number]; refFn: (g: Group | null) => void; repos: RecentRepo[] | null }) {
   const px = 256
   const tex = useCanvasTexture(px, Math.round((px * p.size[1]) / p.size[0]), (ctx, w, h) => {
     ctx.fillStyle = p.color
     ctx.fillRect(0, 0, w, h)
-    p.draw(ctx, w, h)
-  })
+    p.draw(ctx, w, h, repos)
+  }, [repos])
   return (
     // pivot at the pin so a flutter swings from the top
     <group position={[p.at[0], p.at[1] + p.size[1] / 2 - 0.03, 0.035]} rotation={[0, 0, p.rot]} ref={refFn}>
@@ -95,6 +104,7 @@ function Paper({ p, refFn }: { p: (typeof PAPERS)[number]; refFn: (g: Group | nu
 /** Cork board with pinned papers — Emir's CV. Faces +z. */
 export default function CorkBoard() {
   const papers = useRef<(Group | null)[]>([])
+  const repos = useRecentRepos()
   usePulse('cork', () => {
     papers.current.forEach((g, i) => {
       if (!g) return
@@ -113,7 +123,7 @@ export default function CorkBoard() {
         <Toon color={mix(PALETTE.woodLight, PALETTE.mustard, 0.35)} />
       </mesh>
       {PAPERS.map((p, i) => (
-        <Paper key={i} p={p} refFn={(g) => void (papers.current[i] = g)} />
+        <Paper key={i} p={p} repos={repos} refFn={(g) => void (papers.current[i] = g)} />
       ))}
     </group>
   )

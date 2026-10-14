@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { about, contact, cv, projects, skills } from '../data/content'
 import { useApp } from '../store/useApp'
 import ByteMark from './ByteMark'
+import RecentRepos from '../ui/RecentRepos'
+import ContactForm from '../ui/ContactForm'
 
 const STATUS = { LIVE: 'Live', 'IN DEV': 'In development', DONE: 'Shipped' } as const
 
@@ -135,6 +137,11 @@ export default function ClassicView() {
           </div>
         </section>
 
+        <section className="c-section c-github" aria-labelledby="github-h">
+          <h2 id="github-h">Recently on GitHub</h2>
+          <RecentRepos className="recent-repos c-repos" />
+        </section>
+
         <section id="skills" className="c-section" aria-labelledby="skills-h">
           <h2 id="skills-h">Skills</h2>
           <ul className="c-chips c-chips--big">
@@ -157,6 +164,7 @@ export default function ClassicView() {
               {contact.email}
             </a>
           </p>
+          <ContactForm />
           <p className="c-muted">
             {contact.links.map((l, i) => (
               <span key={l.href}>

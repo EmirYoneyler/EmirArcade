@@ -117,7 +117,7 @@ export const projects: Project[] = [
 ]
 
 export const site = {
-  url: 'https://emir-arcade.vercel.app',
+  url: 'https://emirarcade.vercel.app',
   ogImage: '/og.jpg',
 }
 
