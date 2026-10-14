@@ -1,0 +1,40 @@
+:root {
+  --bg: #1f2421;
+  --wall: #34463c;
+  --trim: #c9b79c;
+  --wood-dark: #7a4e32;
+  --wood-light: #a0694a;
+  --rust: #b4532a;
+  --mustard: #d9a441;
+  --teal: #2f6f6a;
+  --cream: #efe3c8;
+  --amber: #ffb000;
+  --font-pixel: 'Silkscreen', monospace;
+  --font-body: 'IBM Plex Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--cream);
+  font-family: var(--font-body);
+  overflow: hidden;
+}
+canvas { display: block; touch-action: none; }
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+.boot {
+  position: fixed; inset: 0; display: grid; place-items: center;
+  background: var(--bg); color: var(--amber);
+  font-family: var(--font-pixel); letter-spacing: .12em;
+  z-index: 50; transition: opacity .6s ease;
+}
+.boot[data-done='true'] { opacity: 0; pointer-events: none; }
+.boot__bar { width: 220px; height: 10px; border: 2px solid var(--amber); margin-top: 14px; }
+.boot__bar > i { display: block; height: 100%; background: var(--amber); }
+
+.hud-title {
+  position: fixed; left: 20px; top: 16px; z-index: 10; pointer-events: none;
+  font-family: var(--font-pixel); color: var(--cream); font-size: 14px; letter-spacing: .14em;
+}
+.hud-title small { display: block; color: var(--trim); opacity: .7; font-size: 10px; margin-top: 4px; }
