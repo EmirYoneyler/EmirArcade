@@ -53,7 +53,7 @@ export default function Cat() {
         </mesh>
         {/* head tucked on the front-right */}
         <group position={[0.13, 0.08, 0.06]}>
-          <mesh castShadow>
+          <mesh>
             <sphereGeometry args={[0.072, 16, 12]} />
             <Toon color={PALETTE.mustard} />
           </mesh>

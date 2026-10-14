@@ -62,6 +62,7 @@ export default function Arcade() {
             twoPlayer
             screenRes={[640, 480]}
             screenPixelScale={2}
+            screenFps={view === 'room' ? 20 : 30}
             onScreen={onMainScreen}
           />
         </Interactive>

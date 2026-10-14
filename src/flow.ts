@@ -1,6 +1,6 @@
 import { projects } from './data/content'
 import { useApp } from './store/useApp'
-import { flyTo } from './scene/flight'
+import { flyTo } from './cameraBridge'
 
 /**
  * High-level navigation. UI, keyboard and 3D all call these — never flyTo

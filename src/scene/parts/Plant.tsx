@@ -36,7 +36,7 @@ export default function Plant() {
         {LEAVES.map((l, i) => (
           <group key={i} rotation={[0, l.a, 0]}>
             <group rotation={[l.tilt, 0, 0]}>
-              <mesh position={[0, l.len / 2, 0]} scale={[0.07, l.len / 2, 0.022]} castShadow>
+              <mesh position={[0, l.len / 2, 0]} scale={[0.07, l.len / 2, 0.022]}>
                 <sphereGeometry args={[1, 10, 8]} />
                 <Toon color={l.color} />
               </mesh>

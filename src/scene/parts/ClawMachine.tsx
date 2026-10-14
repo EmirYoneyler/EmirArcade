@@ -48,7 +48,7 @@ function Tag({ text }: { text: string }) {
 function Plush({ color, ear, tag }: { color: string; ear: string; tag: string }) {
   return (
     <group>
-      <mesh scale={[1, 0.92, 0.85]} castShadow>
+      <mesh scale={[1, 0.92, 0.85]}>
         <sphereGeometry args={[0.085, 16, 12]} />
         <Toon color={color} />
       </mesh>
@@ -192,7 +192,7 @@ export default function ClawMachine() {
       {/* corner posts + glass */}
       {[-1, 1].flatMap((sx) =>
         [-1, 1].map((sz) => (
-          <mesh key={`${sx}${sz}`} position={[sx * (W / 2 - 0.022), 1.235, sz * (D / 2 - 0.022)]} castShadow>
+          <mesh key={`${sx}${sz}`} position={[sx * (W / 2 - 0.022), 1.235, sz * (D / 2 - 0.022)]}>
             <boxGeometry args={[0.044, 0.85, 0.044]} />
             <Toon color={PALETTE.mustard} />
           </mesh>

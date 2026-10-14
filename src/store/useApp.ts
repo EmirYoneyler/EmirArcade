@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { SECRETS, SECRET_COUNT, type SecretId } from '../data/secrets'
+import { initialMode, saveMode, type Mode } from '../mode'
 
 /**
  * room     — overview of the arcade
@@ -21,7 +22,18 @@ function loadSecrets(): SecretId[] {
   }
 }
 
+/** Boot sequence stages, in order; the bar shows real progress through them. */
+export type BootStage = 'rom' | 'assets' | 'gpu' | 'done'
+
 type AppState = {
+  mode: Mode
+  /** true when the mode was picked automatically (small/weak device) */
+  modeAuto: boolean
+  bootStage: BootStage
+  /** 0..1 within the current boot stage */
+  bootProgress: number
+  setMode: (m: Mode) => void
+  setBoot: (stage: BootStage, progress?: number) => void
   view: View
   lightsOn: boolean
   soundOn: boolean
@@ -44,7 +56,6 @@ type AppState = {
 
   setHovered: (n: string | null) => void
   setFocused: (id: string | null) => void
-  setReady: () => void
   setView: (v: View) => void
   setMenuIndex: (i: number) => void
   selectProject: (id: string | null) => void
@@ -62,7 +73,19 @@ type AppState = {
 
 let toastId = 0
 
+const start = initialMode()
+
 export const useApp = create<AppState>((set, get) => ({
+  mode: start.mode,
+  modeAuto: start.auto,
+  bootStage: 'rom',
+  bootProgress: 0,
+  setMode: (mode) => {
+    saveMode(mode)
+    // leaving the arcade resets it, so coming back starts in the room
+    set({ mode, modeAuto: false, view: 'room', musicOn: false, panel: null, dialog: null, ready: false, bootStage: 'rom', bootProgress: 0 })
+  },
+  setBoot: (bootStage, bootProgress = 0) => set({ bootStage, bootProgress, ready: bootStage === 'done' }),
   view: 'room',
   lightsOn: true,
   soundOn: false, // sound is OFF by default
@@ -81,7 +104,6 @@ export const useApp = create<AppState>((set, get) => ({
 
   setHovered: (hovered) => set({ hovered }),
   setFocused: (focused) => set({ focused }),
-  setReady: () => set({ ready: true }),
   setView: (view) => set({ view }),
   setMenuIndex: (menuIndex) => set({ menuIndex }),
   selectProject: (selectedProject) => set({ selectedProject }),

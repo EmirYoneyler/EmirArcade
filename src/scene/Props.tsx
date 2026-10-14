@@ -15,6 +15,7 @@ import LightSwitch from './parts/LightSwitch'
 
 const BACK = -ROOM.d / 2 // back wall surface
 const LEFT = -ROOM.w / 2 // left wall surface
+const reduceMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const FACE_RIGHT: [number, number, number] = [0, Math.PI / 2, 0] // for things on the left wall
 
 /** Every prop in the room besides the three cabinets. */
@@ -75,7 +76,7 @@ export default function Props() {
       </group>
 
       {/* ambient life: dust drifting in the lamp light */}
-      <Sparkles count={70} scale={[2.6, 2.6, 2.6]} position={[0.2, 1.7, 0.4]} size={1.6} speed={0.18} opacity={0.5} color={PALETTE.cream} noise={0.6} />
+      {!reduceMotion && <Sparkles count={70} scale={[2.6, 2.6, 2.6]} position={[0.2, 1.7, 0.4]} size={1.6} speed={0.18} opacity={0.5} color={PALETTE.cream} noise={0.6} />}
       {/* EMIR-1's screen spills a little amber onto the floor — most visible with the lights off */}
       <pointLight position={[SCREEN_CENTER.x, SCREEN_CENTER.y - 0.2, SCREEN_CENTER.z + 0.6]} color={LIGHT.phosphor} intensity={0.9} distance={3.2} decay={2} />
     </group>

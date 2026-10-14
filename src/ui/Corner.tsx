@@ -23,6 +23,7 @@ export default function Corner() {
   const found = useApp((s) => s.secrets.length)
   const toasts = useApp((s) => s.toasts)
   const dropToast = useApp((s) => s.dropToast)
+  const setMode = useApp((s) => s.setMode)
 
   useEffect(() => {
     if (!toasts.length) return
@@ -33,6 +34,9 @@ export default function Corner() {
   return (
     <div className="corner">
       <div className="corner__row">
+        <button className="corner__btn corner__btn--text" onClick={() => setMode('classic')}>
+          CLASSIC VIEW
+        </button>
         <span className="corner__secrets" aria-label={`Secrets found: ${found} of ${SECRET_COUNT}`}>
           SECRETS {found}/{SECRET_COUNT}
         </span>

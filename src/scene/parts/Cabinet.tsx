@@ -85,7 +85,7 @@ function Joystick({ x, ball }: { x: number; ball: string }) {
         <cylinderGeometry args={[0.009, 0.009, 0.09, 8]} />
         <Toon color={PALETTE.bg} />
       </mesh>
-      <mesh position={[0.007, 0.1, 0]} castShadow>
+      <mesh position={[0.007, 0.1, 0]}>
         <sphereGeometry args={[0.03, 16, 12]} />
         <Toon color={ball} />
       </mesh>

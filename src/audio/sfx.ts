@@ -1,9 +1,10 @@
-import { Howl, Howler } from 'howler'
+import type { Howl } from 'howler'
 import { useApp } from '../store/useApp'
 
 /**
  * All sound effects are synthesized at runtime into tiny WAV clips and
  * played through Howler — no audio files to download, nothing licensed.
+ * Howler itself is only fetched the first time a sound actually plays.
  */
 const RATE = 22050
 
@@ -77,21 +78,25 @@ function wavDataUri(dur: number, voice: Voice) {
 }
 
 const cache = new Map<string, Howl>()
+let howler: Promise<typeof import('howler')> | null = null
 
 /** Play a synthesized effect. Silent (and free) while sound is off. */
 export function sfx(name: SfxName) {
   if (!useApp.getState().soundOn) return
-  let h = cache.get(name)
-  if (!h) {
-    const r = RECIPES[name]
-    h = new Howl({ src: [wavDataUri(r.dur, r.voice())], format: ['wav'], volume: 0.7 })
-    cache.set(name, h)
-  }
-  h.play()
+  howler ??= import('howler')
+  howler.then(({ Howl }) => {
+    if (!useApp.getState().soundOn) return
+    let h = cache.get(name)
+    if (!h) {
+      const r = RECIPES[name]
+      h = new Howl({ src: [wavDataUri(r.dur, r.voice())], format: ['wav'], volume: 0.7 })
+      cache.set(name, h)
+    }
+    h.play()
+  })
 }
 
-// Global mute follows the store; sound starts OFF.
-Howler.mute(!useApp.getState().soundOn)
+// Muting stops anything still ringing.
 useApp.subscribe((s, prev) => {
-  if (s.soundOn !== prev.soundOn) Howler.mute(!s.soundOn)
+  if (prev.soundOn && !s.soundOn) howler?.then(({ Howler }) => Howler.stop())
 })

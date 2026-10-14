@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { projects, byteLines } from '../data/content'
+import { projects, byteLines, about } from '../data/content'
 import { OBJECTS, activate } from '../scene/actions'
 import { sfx } from '../audio/sfx'
 import { useApp } from '../store/useApp'
@@ -126,6 +126,13 @@ export default function Hud() {
 
   return (
     <>
+      <a className="skip" href="#" onClick={(e) => (e.preventDefault(), useApp.getState().setMode('classic'))}>
+        Skip to the classic (text) version
+      </a>
+      <h1 className="hud-title">
+        {about.name.toUpperCase()}
+        <small>{about.title}</small>
+      </h1>
       <Tooltip />
       {view === 'room' && <RoomMirror />}
       {view === 'cabinet' && <MenuMirror />}

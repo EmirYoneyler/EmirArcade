@@ -68,7 +68,7 @@ function Floor() {
 /** Axis-aligned box from min/max corners — used to frame the window hole. */
 function Slab({ x0, x1, y0, y1, z, t = T, color = PALETTE.wall }: { x0: number; x1: number; y0: number; y1: number; z: number; t?: number; color?: string }) {
   return (
-    <mesh position={[(x0 + x1) / 2, (y0 + y1) / 2, z]} receiveShadow castShadow>
+    <mesh position={[(x0 + x1) / 2, (y0 + y1) / 2, z]} receiveShadow>
       <boxGeometry args={[x1 - x0, y1 - y0, t]} />
       <Toon color={color} />
     </mesh>
@@ -103,7 +103,7 @@ function LeftWall() {
   const x = -W / 2 - T / 2
   return (
     <group>
-      <mesh position={[x, H / 2, 0]} receiveShadow castShadow>
+      <mesh position={[x, H / 2, 0]} receiveShadow>
         <boxGeometry args={[T, H, D]} />
         <Toon color={PALETTE.wall} />
       </mesh>

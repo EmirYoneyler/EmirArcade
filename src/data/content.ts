@@ -118,7 +118,7 @@ export const projects: Project[] = [
 
 export const site = {
   url: 'https://emir-arcade.vercel.app',
-  ogImage: '/og.png',
+  ogImage: '/og.jpg',
 }
 
 /** CV shown when the cork board is clicked (and in the classic view). */

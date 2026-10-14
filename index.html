@@ -3,15 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Emir Yöneyler — Software Engineer</title>
-    <meta name="description" content="Portfolio of Emir Yöneyler, software engineer: Java/Spring Boot and Go backends, React and Python full-stack. Explore it as a late-night arcade." />
     <meta name="theme-color" content="#1F2421" />
+    <!--app-head-->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet" />
+    <script>
+      // Pick arcade vs classic before first paint (mirrors src/mode.ts).
+      ;(function () {
+        var d = document.documentElement, m = null
+        try { m = localStorage.getItem('emir-arcade:view') } catch (e) {}
+        if (m !== 'arcade' && m !== 'classic') {
+          var n = navigator, gl = false
+          try { gl = !!document.createElement('canvas').getContext('webgl2') } catch (e) {}
+          var weak = innerWidth < 768 || (n.connection && n.connection.saveData) ||
+            (n.hardwareConcurrency || 8) <= 2 || (n.deviceMemory || 8) <= 2
+          m = weak || !gl ? 'classic' : 'arcade'
+          d.dataset.auto = '1'
+        }
+        d.dataset.mode = m
+      })()
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><!--app-html--></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
