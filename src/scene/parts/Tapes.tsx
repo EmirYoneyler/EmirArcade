@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import { RoundedBox } from '@react-three/drei'
 import gsap from 'gsap'
 import { Object3D, Quaternion, Vector3, type Group } from 'three'
-import { PALETTE, mix } from '../../theme/palette'
+import { PALETTE, LIGHT, mix } from '../../theme/palette'
 import { projects } from '../../data/content'
 import { TAPE_DECK } from '../../config/camera'
 import { useApp } from '../../store/useApp'
@@ -126,11 +126,49 @@ function Tape({ index }: { index: number }) {
   )
 }
 
+/** Lit "PROJECTS" sign on a post behind the stand, so the rack reads from across the room. */
+function RackSign() {
+  const tex = useCanvasTexture(512, 160, (ctx, w, h) => {
+    ctx.fillStyle = PALETTE.cream
+    ctx.fillRect(0, 0, w, h)
+    ctx.strokeStyle = PALETTE.rust
+    ctx.lineWidth = 8
+    ctx.strokeRect(10, 10, w - 20, h - 20)
+    ctx.fillStyle = PALETTE.rust
+    ctx.font = pixelFont(64, true)
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('PROJECTS', w / 2, 66)
+    ctx.fillStyle = PALETTE.teal
+    ctx.font = pixelFont(24, true)
+    ctx.fillText('PICK A TAPE', w / 2, 122)
+  })
+  const top = TABLE.top + STAND.back + TH_S + 0.16
+  return (
+    <group position={[0, 0, -0.17]}>
+      <mesh position={[0, (TABLE.top + top) / 2, -0.03]}>
+        <boxGeometry args={[0.04, top - TABLE.top, 0.04]} />
+        <Toon color={PALETTE.woodDark} />
+      </mesh>
+      <RoundedBox args={[0.66, 0.22, 0.05]} radius={0.015} smoothness={2} position={[0, top + 0.08, 0]} castShadow>
+        <Toon color={PALETTE.woodDark} />
+      </RoundedBox>
+      <mesh position={[0, top + 0.08, 0.026]}>
+        <planeGeometry args={[0.6, 0.18]} />
+        <meshBasicMaterial map={tex} toneMapped={false} color={[1.15, 1.15, 1.15]} />
+      </mesh>
+    </group>
+  )
+}
+
 /** Little side table with a stepped wooden stand. Table-local coordinates. */
 function RackTable() {
   const { top, w, d } = TABLE
   return (
     <group>
+      <RackSign />
+      {/* a warm little spot so the tapes pop, even with the room lights off */}
+      <pointLight position={[0, top + 0.75, 0.45]} color={LIGHT.tungsten} intensity={1.1} distance={1.8} decay={2} />
       <RoundedBox args={[w, 0.04, d]} radius={0.01} smoothness={2} position={[0, top - 0.02, 0]} castShadow receiveShadow>
         <Toon color={PALETTE.woodLight} />
       </RoundedBox>
@@ -203,7 +241,8 @@ export default function Tapes() {
     }
   }, [deckIndex, view, prog])
 
-  useFrame(() => {
+  useFrame(({ clock }) => {
+    const idle = (view === 'room' || view === 'cabinet') && tapeHover === null
     let lid = 0
     let loaded = false
     projects.forEach((_, i) => {
@@ -218,10 +257,14 @@ export default function Tapes() {
       }
       const t = prog[i].t
       const { a: from, b: to, q } = tmp
+      // while idle on the rack, tapes take turns peeking up to catch the eye
+      const wave = (clock.elapsedTime * 0.7 - i * 0.6) % (projects.length * 0.6 + 1.2)
+      const peek = t <= 0 && idle ? Math.max(0, Math.sin(Math.min(1, Math.max(0, wave / 0.6)) * Math.PI)) * 0.035 : 0
       // big on the rack, deck-sized by the time it reaches the slot
       g.scale.setScalar(TAPE_SCALE + (DECK_TAPE_SCALE - TAPE_SCALE) * smooth((t - 0.22) / 0.56))
       if (t <= 0) {
         g.position.copy(r.p)
+        g.position.y += peek
         g.quaternion.copy(r.q)
       } else if (t < 0.22) {
         // lift straight up out of the rack
