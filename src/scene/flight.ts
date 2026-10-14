@@ -7,6 +7,8 @@ const reduceMotion = () =>
 
 /** How much mouse parallax each pose allows. */
 const PARALLAX: Record<PoseName, number> = { room: 1, cabinet: 0.2, screen: 0 }
+/** How much narrow-viewport back-off each pose allows. */
+const FIT: Record<PoseName, number> = { room: 1, cabinet: 0.6, screen: 0 }
 
 let tl: gsap.core.Timeline | null = null
 
@@ -22,12 +24,13 @@ export function flyTo(name: PoseName, duration = 1.2, ease = 'power3.inOut'): Pr
     livePose.target.copy(p.target)
     livePose.fov = p.fov
     livePose.parallax = PARALLAX[name]
+    livePose.fit = FIT[name]
     return Promise.resolve()
   }
   return new Promise((resolve) => {
     tl = gsap.timeline({ defaults: { duration, ease }, onComplete: () => resolve() })
     tl.to(livePose.position, { x: p.position.x, y: p.position.y, z: p.position.z }, 0)
       .to(livePose.target, { x: p.target.x, y: p.target.y, z: p.target.z }, 0)
-      .to(livePose, { fov: p.fov, parallax: PARALLAX[name] }, 0)
+      .to(livePose, { fov: p.fov, parallax: PARALLAX[name], fit: FIT[name] }, 0)
   })
 }

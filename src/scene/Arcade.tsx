@@ -3,9 +3,30 @@ import { ROOM } from '../config/camera'
 import Cabinet, { type CabinetPaint } from './parts/Cabinet'
 import Interactive from './Interactive'
 import { useApp } from '../store/useApp'
-import { pressStart } from '../flow'
+import { pressStart, chooseProject } from '../flow'
+import { menuRowAt } from './crt/menu'
+import type { ProgramName } from './crt/registry'
+import type { View } from '../store/useApp'
 
 const BACK = -ROOM.d / 2 + 0.55
+
+const MAIN_PROGRAM: Record<View, ProgramName> = {
+  room: 'attract',
+  cabinet: 'menu',
+  loading: 'loading',
+  project: 'loading',
+}
+
+/** Mouse on the EMIR-1 menu: hover moves the cursor, click starts. */
+function onMainScreen(type: 'move' | 'click' | 'leave', x: number, y: number) {
+  const s = useApp.getState()
+  if (s.view !== 'cabinet') return
+  const row = menuRowAt(x, y)
+  document.body.style.cursor = row >= 0 ? 'pointer' : ''
+  if (row < 0) return
+  if (type === 'move' && row !== s.menuIndex) s.setMenuIndex(row)
+  if (type === 'click') chooseProject(row)
+}
 
 const MAIN: CabinetPaint = {
   side: PALETTE.rust,
@@ -33,7 +54,16 @@ export default function Arcade() {
     <group>
       <group position={[0, 0, BACK]}>
         <Interactive name="EMIR-1" onActivate={pressStart} enabled={view === 'room'}>
-          <Cabinet paint={MAIN} title="EMIR-1" program={view === 'room' ? 'attract' : 'ready'} width={1.08} twoPlayer />
+          <Cabinet
+            paint={MAIN}
+            title="EMIR-1"
+            program={MAIN_PROGRAM[view]}
+            width={1.08}
+            twoPlayer
+            screenRes={[640, 480]}
+            screenPixelScale={2}
+            onScreen={onMainScreen}
+          />
         </Interactive>
       </group>
       {/* side cabinets get their own interactions in Phase 4 */}

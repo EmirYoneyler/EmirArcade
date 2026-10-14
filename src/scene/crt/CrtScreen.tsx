@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, type ThreeEvent } from '@react-three/fiber'
 import { CanvasTexture, Mesh, NearestFilter, ShaderMaterial, SRGBColorSpace, Vector3 } from 'three'
-import { PROGRAMS, type ProgramName, type CrtInput } from './programs'
+import type { CrtInput } from './programs'
+import { PROGRAMS, type ProgramName } from './registry'
 import { useApp } from '../../store/useApp'
 
 const vert = /* glsl */ `
@@ -44,44 +45,62 @@ type Props = {
   height: number
   res?: [number, number]
   fps?: number
+  /** canvas pixels per logical pixel — 2 keeps menu text crisp up close */
+  pixelScale?: number
+  /** pointer events in logical CRT pixels (already corrected for curvature) */
+  onPointer?: (type: 'move' | 'click' | 'leave', x: number, y: number) => void
+}
+
+/** Same barrel distortion as the shader, so hit tests land where pixels are drawn. */
+function curve(u: number, v: number): [number, number] {
+  const x = u * 2 - 1
+  const y = v * 2 - 1
+  const d = x * x + y * y
+  return [(x * (1 + d * 0.035)) * 0.5 + 0.5, (y * (1 + d * 0.05)) * 0.5 + 0.5]
 }
 
 /** A CRT tube face: draws a 2D pixel program into a canvas texture. */
-export default function CrtScreen({ program, width, height, res = [320, 240], fps = 30 }: Props) {
+export default function CrtScreen({ program, width, height, res = [320, 240], fps = 30, pixelScale = 1, onPointer }: Props) {
+  const lw = res[0] / pixelScale
+  const lh = res[1] / pixelScale
   const mesh = useRef<Mesh>(null)
   const lightsOn = useApp((s) => s.lightsOn)
-  const { canvas, ctx, tex } = useMemo(() => {
+  const { ctx, tex } = useMemo(() => {
     const canvas = document.createElement('canvas')
     canvas.width = res[0]
     canvas.height = res[1]
     const ctx = canvas.getContext('2d')!
     ctx.imageSmoothingEnabled = false
+    ctx.scale(pixelScale, pixelScale)
     const tex = new CanvasTexture(canvas)
     tex.colorSpace = SRGBColorSpace
     tex.magFilter = NearestFilter
     tex.generateMipmaps = false
-    return { canvas, ctx, tex }
-  }, [res])
+    return { ctx, tex }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [res[0], res[1], pixelScale])
 
   const mat = useMemo(
     () =>
       new ShaderMaterial({
-        uniforms: { map: { value: tex }, uTime: { value: 0 }, uBoost: { value: 1.6 }, uLines: { value: res[1] / 2 } },
+        uniforms: { map: { value: tex }, uTime: { value: 0 }, uBoost: { value: 1.6 }, uLines: { value: lh / 2 } },
         vertexShader: vert,
         fragmentShader: frag,
         toneMapped: false,
       }),
-    [tex, res],
+    [tex, lh],
   )
   useEffect(() => () => (tex.dispose(), mat.dispose()), [tex, mat])
 
-  const clock = useRef({ start: 0, last: -1, prog: program })
+  // own clock: R3F's restarts when the frameloop resumes after the project page
+  const clock = useRef({ now: 0, start: 0, last: -1, prog: program })
   const input = useMemo<CrtInput>(() => ({ t: 0, look: { x: 0, y: 0 } }), [])
   const v = useMemo(() => new Vector3(), [])
 
-  useFrame((state) => {
-    const now = state.clock.elapsedTime
+  useFrame((state, dt) => {
     const c = clock.current
+    c.now += Math.min(dt, 0.1)
+    const now = c.now
     if (c.prog !== program) {
       c.prog = program
       c.start = now
@@ -96,12 +115,25 @@ export default function CrtScreen({ program, width, height, res = [320, 240], fp
     input.t = now - c.start
     input.look.x = state.pointer.x - v.x
     input.look.y = state.pointer.y - v.y
-    PROGRAMS[program](ctx, canvas.width, canvas.height, input)
+    PROGRAMS[program](ctx, lw, lh, input)
     tex.needsUpdate = true
   })
 
+  const handle = (type: 'move' | 'click') => (e: ThreeEvent<PointerEvent | MouseEvent>) => {
+    if (!onPointer || !e.uv) return
+    e.stopPropagation()
+    const [u, v] = curve(e.uv.x, e.uv.y)
+    onPointer(type, u * lw, (1 - v) * lh)
+  }
+
   return (
-    <mesh ref={mesh} material={mat}>
+    <mesh
+      ref={mesh}
+      material={mat}
+      onPointerMove={onPointer && handle('move')}
+      onClick={onPointer && handle('click')}
+      onPointerLeave={onPointer && (() => onPointer('leave', -1, -1))}
+    >
       <planeGeometry args={[width, height]} />
     </mesh>
   )

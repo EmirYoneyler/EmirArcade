@@ -101,27 +101,6 @@ export const attract: Program = (ctx, w, h, { t, look }) => {
   text(ctx, '© EMIR', 8, h - 8, 8, 'left', DIM)
 }
 
-/** Shown in the cabinet close-up until the game select menu takes over. */
-export const ready: Program = (ctx, w, h, { t, look }) => {
-  ctx.fillStyle = BLACK
-  ctx.fillRect(0, 0, w, h)
-  stars(ctx, w, t * 0.4)
-  text(ctx, 'PLAYER 1', w / 2, 40, 16, 'center', INK, true)
-  drawByte(ctx, {
-    x: w / 2 - 32,
-    y: 80 + Math.round(Math.sin(t * 3) * 3),
-    s: 4,
-    look,
-    blink: blinkAt(t),
-    step: 0,
-    antenna: true,
-    ink: INK,
-    paper: BLACK,
-  })
-  if (t % 1 < 0.62) text(ctx, 'READY', w / 2, 168, 16)
-  text(ctx, 'ESC  BACK', w / 2, h - 16, 8, 'center', DIM)
-}
-
 /** Side cabinet A: a two-paddle rally demo. */
 export const rally: Program = (ctx, w, h, { t }) => {
   ctx.fillStyle = BLACK
@@ -167,5 +146,3 @@ export const patrol: Program = (ctx, w, h, { t }) => {
   ctx.fillRect(sx - 0.5, h - 22 - shot, 1, 4)
 }
 
-export const PROGRAMS = { attract, ready, rally, patrol } as const
-export type ProgramName = keyof typeof PROGRAMS

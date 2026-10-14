@@ -65,3 +65,142 @@ canvas { display: block; touch-action: none; }
 .hud-btn--start { left: 50%; bottom: 28px; transform: translateX(-50%); }
 .hud-btn--start:active { transform: translate(calc(-50% + 2px), 2px); }
 .hud-btn--back { left: 20px; top: 64px; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+/* a focused mirror button becomes visible so keyboard users see where they are */
+.sr-only:focus-within {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  width: auto; height: auto; clip: auto; clip-path: none; z-index: 16;
+}
+.sr-only:focus-within li { display: none; }
+.sr-only:focus-within li:has(:focus) { display: block; }
+.sr-only button {
+  font-family: var(--font-pixel); font-size: 11px; letter-spacing: .08em;
+  background: var(--bg); color: var(--amber); border: 2px solid var(--amber); padding: 8px 12px;
+}
+
+/* ---------- CRT project page ---------- */
+.crt-page {
+  --phos: var(--amber);
+  --phos-dim: rgba(255, 176, 0, .62);
+  --phos-faint: rgba(255, 176, 0, .18);
+  position: fixed; inset: 0; z-index: 40;
+  background: var(--bg); /* the bezel peeking out at the curved corners */
+  color: var(--phos);
+  opacity: 0; visibility: hidden;
+  transition: opacity .45s ease, visibility 0s linear .45s;
+  text-shadow: 0 0 6px rgba(255, 176, 0, .45);
+}
+.crt-page[data-open='true'] {
+  opacity: 1; visibility: visible;
+  transition: opacity .45s ease, visibility 0s;
+}
+.crt-tube {
+  position: absolute; inset: 0; overflow: hidden;
+  background: #000;
+  display: grid; grid-template-rows: 1fr auto;
+  /* curved-glass edges: rounded corners + deep inner shadow */
+  border-radius: 3.2vmin / 4.2vmin;
+  box-shadow: inset 0 0 14vmin rgba(0, 0, 0, .95), inset 0 0 2vmin rgba(0, 0, 0, .9);
+}
+.crt-page__glass {
+  overflow-y: auto; overscroll-behavior: contain;
+  padding: clamp(28px, 7vh, 72px) clamp(20px, 6vw, 64px) 32px;
+  scrollbar-color: var(--phos-faint) transparent;
+}
+.crt-page__content {
+  max-width: 760px; margin: 0 auto;
+  font-size: 15px; line-height: 1.65;
+  animation: crt-in .5s steps(10, end);
+}
+@keyframes crt-in {
+  0% { clip-path: inset(49% 0 49% 0); filter: brightness(2.2); }
+  40% { clip-path: inset(0 0 0 0); filter: brightness(1.5); }
+  100% { clip-path: inset(0 0 0 0); filter: none; }
+}
+.crt-page__scan { /* scanlines + edge vignette over everything */
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.28) 2px 3px),
+    radial-gradient(ellipse at center, rgba(0,0,0,0) 58%, rgba(0,0,0,.65) 100%);
+}
+
+.crt-page h1, .crt-page h2, .crt-kicker, .crt-bar, .crt-status, .crt-meta dt {
+  font-family: var(--font-pixel); font-weight: 400; letter-spacing: .08em;
+}
+.crt-kicker { font-size: 12px; color: var(--phos-dim); margin: 0 0 14px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+.crt-status { border: 1px solid currentColor; padding: 2px 8px 1px; color: var(--phos); }
+.crt-status[data-status='LIVE']::before {
+  content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 7px;
+  background: var(--phos); animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+.crt-page h1 {
+  font-size: clamp(32px, 6vw, 54px); line-height: 1.05; margin: 0 0 16px;
+  font-weight: 700; outline: none;
+}
+.crt-pitch { font-size: clamp(16px, 2.2vw, 19px); margin: 0; color: var(--phos); }
+.crt-page h2 {
+  font-size: 13px; color: var(--phos-dim); margin: 40px 0 12px;
+  display: flex; align-items: center; gap: 12px;
+}
+.crt-page h2::after { content: ''; flex: 1; border-top: 1px dashed var(--phos-faint); }
+.crt-page p { margin: 0; }
+.crt-dim { color: var(--phos-dim); }
+
+.crt-meta {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;
+  margin: 32px 0 0; padding: 16px 0; border-top: 1px solid var(--phos-faint); border-bottom: 1px solid var(--phos-faint);
+}
+.crt-meta dt { font-size: 11px; color: var(--phos-dim); margin-bottom: 4px; }
+.crt-meta dd { margin: 0; }
+
+.crt-list { list-style: none; padding: 0; margin: 0; }
+.crt-list li { padding-left: 22px; position: relative; margin: 6px 0; }
+.crt-list li::before { content: '▸'; position: absolute; left: 0; color: var(--phos-dim); }
+
+.crt-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.crt-chips li {
+  font-size: 13px; padding: 3px 10px; border: 1px solid var(--phos-dim);
+  box-shadow: 2px 2px 0 var(--phos-faint);
+}
+
+.crt-media { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.crt-media img { width: 100%; display: block; border: 1px solid var(--phos-faint); filter: sepia(1) saturate(2.4) hue-rotate(-12deg) brightness(.95); }
+.crt-media--empty {
+  aspect-ratio: 16 / 7; display: grid; place-content: center; text-align: center; gap: 6px;
+  border: 1px dashed var(--phos-faint);
+  background: repeating-linear-gradient(45deg, rgba(255,176,0,.04) 0 6px, transparent 6px 12px);
+}
+.crt-media--empty span { font-family: var(--font-pixel); font-size: 22px; letter-spacing: .14em; animation: blink 1.6s steps(1) infinite; }
+.crt-media--empty small { color: var(--phos-dim); }
+
+.crt-links { list-style: none; padding: 0; margin: 0; display: flex; gap: 12px; flex-wrap: wrap; }
+.crt-links a {
+  color: #000; background: var(--phos); text-decoration: none; text-shadow: none;
+  font-family: var(--font-pixel); font-size: 13px; letter-spacing: .08em; padding: 8px 14px 7px; display: inline-block;
+}
+.crt-links a:hover { background: var(--cream); }
+
+.crt-bar {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  padding: 12px clamp(16px, 5vw, 56px) clamp(16px, 3vh, 28px);
+  border-top: 1px solid var(--phos-faint); background: #000; position: relative; z-index: 1;
+}
+.crt-bar button {
+  font: inherit; font-size: 12px; color: var(--phos); background: transparent;
+  border: 1px solid transparent; padding: 8px 10px; cursor: pointer; text-shadow: inherit;
+  display: flex; gap: 8px; align-items: center;
+}
+.crt-bar button:hover { border-color: var(--phos-dim); }
+.crt-bar__name { color: var(--phos-dim); }
+.crt-bar kbd { font: inherit; font-size: 9px; border: 1px solid currentColor; padding: 1px 4px; opacity: .7; }
+@media (max-width: 560px) { .crt-bar__name { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .crt-page__content { animation: none; }
+  .crt-page, .crt-page[data-open='true'] { transition: none; }
+}

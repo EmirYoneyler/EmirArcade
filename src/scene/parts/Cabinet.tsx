@@ -4,7 +4,7 @@ import { RoundedBox } from '@react-three/drei'
 import { PALETTE, LIGHT } from '../../theme/palette'
 import { Toon, Glow } from '../materials/toon'
 import CrtScreen from '../crt/CrtScreen'
-import type { ProgramName } from '../crt/programs'
+import type { ProgramName } from '../crt/registry'
 import { PROFILE, ANCHORS, RECESS, offsetPolygon, toShape } from '../geometry/cabinetProfile'
 
 export type CabinetPaint = {
@@ -22,6 +22,8 @@ type Props = {
   twoPlayer?: boolean
   screenRes?: [number, number]
   screenFps?: number
+  screenPixelScale?: number
+  onScreen?: (type: 'move' | 'click' | 'leave', x: number, y: number) => void
 }
 
 const PANEL_T = 0.05
@@ -108,7 +110,7 @@ function Buttons({ x, colors }: { x: number; colors: string[] }) {
  * Upright arcade cabinet built from primitives. Origin = floor, centered,
  * facing +z. Swap this component for a .glb later; keep the same props.
  */
-export default function Cabinet({ paint, title, program, width = 1.04, twoPlayer = false, screenRes, screenFps }: Props) {
+export default function Cabinet({ paint, title, program, width = 1.04, twoPlayer = false, screenRes, screenFps, screenPixelScale, onScreen }: Props) {
   const geo = sharedGeo()
   const marquee = useMarqueeTexture(title, paint)
   const W = width
@@ -164,7 +166,15 @@ export default function Cabinet({ paint, title, program, width = 1.04, twoPlayer
           <Toon color={PALETTE.bg} />
         </mesh>
         <group position={[0, 0, 0.008]}>
-          <CrtScreen program={program} width={SCREEN_W} height={SCREEN_H} res={screenRes} fps={screenFps} />
+          <CrtScreen
+            program={program}
+            width={SCREEN_W}
+            height={SCREEN_H}
+            res={screenRes}
+            fps={screenFps}
+            pixelScale={screenPixelScale}
+            onPointer={onScreen}
+          />
         </group>
       </group>
 

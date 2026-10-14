@@ -12,9 +12,12 @@ import { useApp } from '../store/useApp'
 
 export default function Scene() {
   const setReady = useApp((s) => s.setReady)
+  // the project page fully covers the canvas — stop rendering behind it
+  const covered = useApp((s) => s.view === 'project')
   return (
     <Canvas
       style={{ position: 'fixed', inset: 0 }}
+      frameloop={covered ? 'demand' : 'always'}
       dpr={[1, 1.5]}
       shadows={{ type: PCFSoftShadowMap }}
       camera={{ fov: POSES.room.fov, near: 0.1, far: 60, position: POSES.room.position.toArray() }}

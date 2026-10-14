@@ -13,6 +13,8 @@ export const livePose = {
   fov: POSES.room.fov,
   /** 0..1 — parallax is damped to 0 when zoomed into the screen. */
   parallax: 1,
+  /** 0..1 — how much the narrow-viewport back-off applies (none inside the screen). */
+  fit: 1,
 }
 
 const reduceMotion =
@@ -38,7 +40,7 @@ export default function CameraRig() {
 
     const amt = reduceMotion ? 0 : livePose.parallax
     // narrow viewports: back the camera off so the whole diorama fits
-    const fit = Math.max(1, 1.55 / (size.width / size.height))
+    const fit = 1 + (Math.max(1, 1.55 / (size.width / size.height)) - 1) * livePose.fit
     offset.set(smooth.x * 0.55 * amt, smooth.y * 0.3 * amt, -smooth.x * 0.15 * amt)
 
     look.copy(livePose.position).sub(livePose.target).multiplyScalar(fit).add(livePose.target)
