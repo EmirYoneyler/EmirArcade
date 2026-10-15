@@ -47,7 +47,15 @@ function CV() {
       <h3>{t.experience}</h3>
       {cv.experience.map((e) => (
         <div key={e.title} className="sheet__item">
-          <strong>{e.title}</strong> — {e.place} <em>({e.when})</em>
+          <strong>{e.title}</strong> —{' '}
+          {e.href ? (
+            <a href={e.href} target="_blank" rel="noreferrer">
+              {e.place}
+            </a>
+          ) : (
+            e.place
+          )}{' '}
+          <em>({e.when})</em>
           <div>{e.detail}</div>
         </div>
       ))}

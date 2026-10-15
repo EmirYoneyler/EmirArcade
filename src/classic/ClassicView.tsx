@@ -104,7 +104,15 @@ export default function ClassicView() {
                     <strong>{e.title}</strong>
                     <span>{e.when}</span>
                   </div>
-                  <div className="c-muted">{e.place}</div>
+                  <div className="c-muted">
+                    {e.href ? (
+                      <a href={e.href} target="_blank" rel="noreferrer">
+                        {e.place}
+                      </a>
+                    ) : (
+                      e.place
+                    )}
+                  </div>
                   <p>{e.detail}</p>
                 </div>
               ))}

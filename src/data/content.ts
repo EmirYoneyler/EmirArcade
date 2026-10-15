@@ -28,7 +28,7 @@ export const about = {
   title: 'Software Engineer',
   location: 'Istanbul, Türkiye',
   summary:
-    'Computer Science student at Istanbul Aydın University. I build backends in Java/Spring Boot and Go, and full-stack products with React and Python. Currently interning on an AI photo booth, with freelance web projects on the side.',
+    'Software Development student at Istanbul Aydın University. I build backends in Java/Spring Boot and Go, and full-stack products with React and Python. Currently interning at MetasoftCo on an AI photo booth, with freelance web projects on the side.',
   email: 'emiryoneyler@gmail.com',
   github: [
     { label: 'EmirYoneyler', href: 'https://github.com/EmirYoneyler' },
@@ -218,14 +218,15 @@ export const site = {
 /** CV shown when the cork board is clicked (and in the classic view). */
 export const cv = {
   education: [
-    { title: 'B.Sc. Computer Science', place: 'Istanbul Aydın University', when: 'in progress' },
+    { title: 'Software Development', place: 'Istanbul Aydın University', when: 'in progress' },
   ],
   experience: [
     {
       title: 'Software Engineering Intern',
-      place: 'AI photo booth',
+      place: 'MetasoftCo',
+      href: 'https://www.metasoftco.com/',
       when: 'current',
-      detail: 'Face-swap pipeline on Modal.com: 5–10 AI portrait templates per guest in ~10 seconds.',
+      detail: 'AI photo booth for events — face-swap pipeline on Modal.com: 5–10 AI portrait templates per guest in ~10 seconds.',
     },
     {
       title: 'Freelance Web Developer',

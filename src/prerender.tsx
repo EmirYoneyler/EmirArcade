@@ -115,9 +115,9 @@ export function cvHtml(lang: Lang = 'en') {
 <title>${h(about.name)} — CV</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-@page { size: A4; margin: 14mm 15mm; }
+@page { size: A4; margin: 12mm 14mm; }
 * { box-sizing: border-box; }
-body { margin: 0; font: 9.6pt/1.42 'IBM Plex Sans', system-ui, sans-serif; color: #1f2421; }
+body { margin: 0; font: 9.4pt/1.4 'IBM Plex Sans', system-ui, sans-serif; color: #1f2421; }
 a { color: inherit; text-decoration: none; }
 h1 { font: 600 21pt/1.1 'IBM Plex Mono', monospace; margin: 0; letter-spacing: -.01em; }
 .sub { margin: 3px 0 7px; color: #9a4a1c; font-weight: 500; }
@@ -142,7 +142,7 @@ li { margin: 1px 0; }
 <p>${h(about.summary)}</p>
 <h2>${H.experience}</h2>
 ${cv.experience
-  .map((e) => `<div class="item"><div class="row"><strong>${h(e.title)} — ${h(e.place)}</strong><span class="meta">${h(e.when)}</span></div><p>${h(e.detail)}</p></div>`)
+  .map((e) => `<div class="item"><div class="row"><strong>${h(e.title)} — ${e.href ? `<a href="${e.href}">${h(e.place)}</a>` : h(e.place)}</strong><span class="meta">${h(e.when)}</span></div><p>${h(e.detail)}</p></div>`)
   .join('')}
 <h2>${H.projects}</h2>
 ${proj}
