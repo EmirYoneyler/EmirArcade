@@ -168,8 +168,16 @@ canvas { display: block; touch-action: none; }
   box-shadow: 2px 2px 0 var(--phos-faint);
 }
 
-.crt-media { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-.crt-media img { width: 100%; display: block; border: 1px solid var(--phos-faint); filter: sepia(1) saturate(2.4) hue-rotate(-12deg) brightness(.95); }
+.crt-media { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.crt-media a { display: block; background: #050403; border: 1px solid var(--phos-faint); line-height: 0; }
+.crt-media a:first-child { grid-column: 1 / -1; }
+.crt-media a:hover, .crt-media a:focus-visible { border-color: var(--phos); outline: none; }
+/* real screenshots: keep their colours, just a faint phosphor tint */
+.crt-media img {
+  width: 100%; aspect-ratio: 16 / 10; object-fit: contain; display: block;
+  filter: sepia(.18) brightness(.94); transition: filter .2s;
+}
+.crt-media a:hover img, .crt-media a:focus-visible img { filter: none; }
 .crt-media--empty {
   aspect-ratio: 16 / 7; display: grid; place-content: center; text-align: center; gap: 6px;
   border: 1px dashed var(--phos-faint);

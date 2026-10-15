@@ -44,7 +44,7 @@ src/
   ArcadeApp.tsx         arcade UI shell, lazy-loads the 3D Scene
   classic/              classic view (also pre-rendered at build time)
   ui/                   HUD, dialog box, CRT project page, panels, boot
-  audio/                synthesized SFX (Howler), original chiptune (Web Audio)
+  audio/                synthesized SFX (Howler), two chiptune loops (original + Korobeiniki), one picked at random (Web Audio)
   scene/
     Scene.tsx Room.tsx Arcade.tsx Props.tsx Lighting.tsx Effects.tsx
     CameraRig.tsx flight.ts      GSAP camera moves, parallax

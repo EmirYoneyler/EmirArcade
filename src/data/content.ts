@@ -38,19 +38,19 @@ export type Skill = (typeof skills)[number]
 
 /** Which projects use which skill — BYTE reads this out at the claw machine. */
 export const skillProjects: Record<Skill, string[]> = {
-  Go: ['mymood'],
+  Go: ['mymood', 'alagems'],
   Java: ['bulletin-service'],
-  Python: ['critic-que', 'scraper', 'uniasistan', 'photo-booth'],
+  Python: ['coachai', 'critic-que', 'uniasistan'],
   React: ['critic-que'],
   PostgreSQL: ['mymood', 'bulletin-service', 'uniasistan'],
-  Docker: ['mymood', 'critic-que', 'scraper', 'bulletin-service'],
+  Docker: ['mymood', 'critic-que', 'bulletin-service'],
 }
 
 const gh = (repo: string) => ({ label: 'GitHub', href: `https://github.com/EmirYoneyler/${repo}` })
 
 /**
- * The tapes on the rack, in order. Picked from github.com/EmirYoneyler as the
- * strongest work; add `media` (screenshots in /public) and demo links here.
+ * The tapes on the rack, in order: the two live sites, then the pinned repos
+ * on github.com/EmirYoneyler. `media` paths point into /public/projects.
  */
 export const projects: Project[] = [
   {
@@ -69,8 +69,46 @@ export const projects: Project[] = [
       'Premium-ready: subscription column and middleware already in place',
     ],
     stack: ['Go', 'Fiber', 'HTMX', 'PostgreSQL (Neon)', 'pgx', 'JWT', 'Docker', 'Render'],
-    links: [gh('mymood2')],
-    media: [],
+    links: [{ label: 'Live site', href: 'https://mymood-5bh2.onrender.com/' }, gh('mymood2')],
+    media: ['/projects/mymood/home.jpg', '/projects/mymood/register.jpg', '/projects/mymood/mobile.jpg'],
+  },
+  {
+    id: 'alagems',
+    title: 'ALAGEMS',
+    cartridge: 'ALAGEMS',
+    pitch: 'Website and backend for a valuable-cargo logistics company in Kazakhstan.',
+    status: 'LIVE',
+    role: 'Freelance — backend & admin',
+    about:
+      'Client work for ALAGEMS, a logistics hub for valuable cargo in Almaty. The public site runs in Russian and English; its content is managed through an admin CMS backed by a Go API.',
+    highlights: [
+      'Go + Fiber backend serving the site content and an admin CMS',
+      'Russian / English content managed from the admin panel',
+      'Live in production at alagems.kz',
+      'Private client repository — code available on request',
+    ],
+    stack: ['Go', 'Fiber', 'Admin CMS', 'RU / EN'],
+    links: [{ label: 'Live site', href: 'https://alagems.kz/' }],
+    media: ['/projects/alagems/home.jpg', '/projects/alagems/services.jpg'],
+  },
+  {
+    id: 'coachai',
+    title: 'CoachAI',
+    cartridge: 'COACHAI',
+    pitch: 'A webcam fitness coach that counts your reps and checks your form.',
+    status: 'DONE',
+    role: 'Solo developer — computer vision & AI',
+    about:
+      'MediaPipe Pose tracks your joints through the webcam, joint angles drive a rep counter and form checks for squats, curls and push-ups, and GPT turns a recorded set into coaching feedback.',
+    highlights: [
+      'Real-time pose tracking with MediaPipe; skeleton overlay with OpenCV',
+      'Angle-based rep counting and form feedback for squats, curls and push-ups',
+      'Record a set, then get a GPT analysis of the movement data',
+      'Add a new exercise by name — the AI suggests landmarks and angle thresholds',
+    ],
+    stack: ['Python', 'MediaPipe', 'OpenCV', 'NumPy', 'OpenAI API', 'Streamlit'],
+    links: [gh('COACHAIprototip')],
+    media: ['/projects/coachai/pose.jpg', '/projects/coachai/app.jpg'],
   },
   {
     id: 'critic-que',
@@ -89,49 +127,7 @@ export const projects: Project[] = [
     ],
     stack: ['Python', 'FastAPI', 'Pydantic', 'BeautifulSoup', 'React', 'Vite', 'Tailwind', 'Docker'],
     links: [gh('The-Critic-Que')],
-    media: [],
-  },
-  {
-    id: 'bulletin-service',
-    title: 'Fund Bulletin Services',
-    cartridge: 'BULLETIN SVC',
-    pitch: 'Three Spring Boot microservices that publish investment-fund bulletins.',
-    status: 'DONE',
-    role: 'Solo developer — backend',
-    about:
-      'An auth-service issues JWTs, the bulletin-service manages fund data in PostgreSQL, and a pdf-service renders the bulletin as a PDF with iText7.',
-    highlights: [
-      'Separate auth-service with JWT login and registration',
-      'Fund CRUD over REST with Spring Data JPA and PostgreSQL',
-      'pdf-service generating bulletin PDFs with iText7',
-      'Each service independently deployable; Dockerfile included',
-    ],
-    stack: ['Java 17', 'Spring Boot', 'Spring Security', 'PostgreSQL', 'JWT', 'iText7', 'Docker'],
-    links: [
-      { label: 'bulletin-service', href: 'https://github.com/EmirYoneyler/bulletin-service' },
-      { label: 'auth-service', href: 'https://github.com/EmirYoneyler/auth-service' },
-      { label: 'pdf-service', href: 'https://github.com/EmirYoneyler/pdf-service' },
-    ],
-    media: [],
-  },
-  {
-    id: 'scraper',
-    title: 'Scraper Orchestrator',
-    cartridge: 'SCRAPER',
-    pitch: 'Fault-tolerant, asynchronous web scraping at scale.',
-    status: 'DONE',
-    role: 'Solo developer — backend & architecture',
-    about:
-      'Clients enqueue a URL and get a task id back immediately; Celery workers fetch it with rotating identities and retry on blocks, and results land in Redis for polling.',
-    highlights: [
-      'FastAPI enqueues work and returns a task id at once; clients poll for the result',
-      'Celery workers with Redis as broker and result backend',
-      'User-agent and proxy rotation to avoid detection',
-      'Retries on 403/429 and errors with exponential backoff (up to 5 attempts)',
-    ],
-    stack: ['Python', 'FastAPI', 'Celery', 'Redis', 'httpx', 'Docker Compose'],
-    links: [gh('Architectural-Design')],
-    media: [],
+    media: ['/projects/critic-que/home.jpg'],
   },
   {
     id: 'uniasistan',
@@ -150,21 +146,31 @@ export const projects: Project[] = [
     ],
     stack: ['Python', 'PostgreSQL', 'pgvector', 'RAG', 'FastAPI (planned)'],
     links: [gh('uniasistan')],
-    media: [],
+    media: ['/projects/uniasistan/pipeline.jpg'],
   },
   {
-    id: 'photo-booth',
-    title: 'AI Photo Booth',
-    cartridge: 'PHOTO BOOTH',
-    pitch: 'Face swap onto AI portrait templates in about ten seconds.',
-    status: 'IN DEV',
-    role: 'Intern — backend & pipeline',
+    id: 'bulletin-service',
+    title: 'Fund Bulletin Services',
+    cartridge: 'BULLETIN SVC',
+    pitch: 'Three Spring Boot microservices that publish investment-fund bulletins.',
+    status: 'DONE',
+    role: 'Solo developer — backend',
     about:
-      "Internship project running on Modal.com. A guest's face is swapped onto 5–10 AI-generated portrait templates using classic (non-diffusion) face swap.",
-    highlights: ['~10 second end-to-end turnaround', '5–10 templates per guest', 'Classic face swap, no diffusion at runtime', 'Serverless GPU on Modal'],
-    stack: ['Python', 'Modal.com', 'Face swap'],
-    links: [],
-    media: [],
+      'An auth-service issues JWTs and the bulletin-service manages fund data in PostgreSQL. A third pdf-service (iText7) is scaffolded to render the bulletin as a PDF.',
+    highlights: [
+      'Separate auth-service with JWT login and registration',
+      'Fund CRUD over REST with Spring Data JPA and PostgreSQL',
+      'pdf-service with iText7 scaffolded for the PDF bulletin (next step)',
+      'Popular funds by size, search by name, filter by category',
+      'Each service independently deployable; Dockerfile included',
+    ],
+    stack: ['Java 17', 'Spring Boot', 'Spring Security', 'PostgreSQL', 'JWT', 'iText7', 'Docker'],
+    links: [
+      { label: 'bulletin-service', href: 'https://github.com/EmirYoneyler/bulletin-service' },
+      { label: 'auth-service', href: 'https://github.com/EmirYoneyler/auth-service' },
+      { label: 'pdf-service', href: 'https://github.com/EmirYoneyler/pdf-service' },
+    ],
+    media: ['/projects/bulletin/architecture.jpg', '/projects/bulletin/api.jpg'],
   },
 ]
 
@@ -203,7 +209,7 @@ export const byteLines = {
   welcome: "Hi, I'm BYTE. Emir built this place, and the jukebox is already on (speaker up top to mute). Poke around — almost everything does something.",
   claw: 'Got one! {skill}. Emir used it in: {projects}.',
   clawNone: "Got one! {skill}. It's in the toolbox — just waiting for the right project.",
-  jukeboxOn: 'Original chiptune — Emir wrote it. No copyrights were harmed.',
+  jukeboxOn: 'Now playing: "{song}". Chiptune made for this room — no copyrights were harmed.',
   jukeboxMuted: "It's playing… but sound is off. Hit the speaker up in the corner.",
   jukeboxOff: 'Ahh, silence. The cat approves.',
   listeningNow: 'Right now Emir is listening to {title} by {artist}. Taste: approved.',
