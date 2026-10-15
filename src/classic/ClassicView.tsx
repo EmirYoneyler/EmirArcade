@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
-import { about, contact, cv, projects, skills } from '../data/content'
+import { about, contact, cv, projects, site, skills } from '../data/content'
+import { linkedProjectIndex } from '../share'
+import { track } from '../analytics'
 import { useApp } from '../store/useApp'
 import ByteMark from './ByteMark'
 import RecentRepos from '../ui/RecentRepos'
@@ -18,6 +20,11 @@ export default function ClassicView() {
   // client-only: was classic picked for them (small/weak device)?
   const [auto, setAuto] = useState(false)
   useEffect(() => setAuto(useApp.getState().modeAuto), [])
+  // opened from a /projects/<id> link: jump to that card
+  useEffect(() => {
+    const i = linkedProjectIndex()
+    if (i >= 0) document.getElementById(`p-${projects[i].id}`)?.scrollIntoView()
+  }, [])
 
   return (
     <div className="classic">
@@ -51,6 +58,12 @@ export default function ClassicView() {
           <div className="c-actions">
             <a className="c-btn" href={`mailto:${about.email}`}>
               Email me
+            </a>
+            <a className="c-btn c-btn--ghost" href={site.cvPdf} download onClick={() => track('CV downloaded', { from: 'classic' })}>
+              Download CV
+            </a>
+            <a className="c-btn c-btn--ghost" href={about.linkedin} target="_blank" rel="noreferrer">
+              LinkedIn
             </a>
             {about.github.map((g) => (
               <a key={g.href} className="c-btn c-btn--ghost" href={g.href} target="_blank" rel="noreferrer">
@@ -115,6 +128,14 @@ export default function ClassicView() {
                 <p className="c-pitch">{p.pitch}</p>
                 <p className="c-muted c-role">{p.role}</p>
                 <p>{p.about}</p>
+                <dl className="c-case">
+                  <dt>Problem</dt>
+                  <dd>{p.caseStudy.problem}</dd>
+                  <dt>Approach</dt>
+                  <dd>{p.caseStudy.approach}</dd>
+                  <dt>Outcome</dt>
+                  <dd>{p.caseStudy.outcome}</dd>
+                </dl>
                 <ul className="c-list">
                   {p.highlights.map((h) => (
                     <li key={h}>{h}</li>
@@ -172,7 +193,7 @@ export default function ClassicView() {
               <span key={l.href}>
                 {i > 0 && ' · '}
                 <a href={l.href} target="_blank" rel="noreferrer">
-                  github.com/{l.label}
+                  {l.label}
                 </a>
               </span>
             ))}

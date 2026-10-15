@@ -1,7 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { projects } from '../data/content'
 import { useApp } from '../store/useApp'
 import { goBack, stepProject } from '../flow'
+import { projectUrl } from '../share'
+import { track } from '../analytics'
 
 /** Media paths are written root-relative; respect a non-root build base. */
 const asset = (src: string) => import.meta.env.BASE_URL + src.replace(/^\//, '')
@@ -33,6 +35,21 @@ export default function ProjectPage() {
     glass.current?.scrollTo({ top: 0 })
     heading.current?.focus({ preventScroll: true })
   }, [open, id])
+
+  useEffect(() => {
+    if (open && id) track('Project opened', { project: id })
+  }, [open, id])
+
+  const [copied, setCopied] = useState(false)
+  useEffect(() => setCopied(false), [id])
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(projectUrl(p.id))
+      setCopied(true)
+    } catch {
+      window.prompt('Copy this link:', projectUrl(p.id))
+    }
+  }
 
   const prev = projects[(index - 1 + projects.length) % projects.length]
   const next = projects[(index + 1) % projects.length]
@@ -85,6 +102,24 @@ export default function ProjectPage() {
           </section>
 
           <section>
+            <h2>CASE STUDY</h2>
+            <dl className="crt-case">
+              <div>
+                <dt>PROBLEM</dt>
+                <dd>{p.caseStudy.problem}</dd>
+              </div>
+              <div>
+                <dt>APPROACH</dt>
+                <dd>{p.caseStudy.approach}</dd>
+              </div>
+              <div>
+                <dt>OUTCOME</dt>
+                <dd>{p.caseStudy.outcome}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section>
             <h2>WHAT IT IS</h2>
             <p>{p.about}</p>
           </section>
@@ -109,19 +144,20 @@ export default function ProjectPage() {
 
           <section>
             <h2>LINKS</h2>
-            {p.links.length ? (
-              <ul className="crt-links">
-                {p.links.map((l) => (
-                  <li key={l.href}>
-                    <a href={l.href} target="_blank" rel="noreferrer">
-                      {l.label} <span aria-hidden>↗</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="crt-dim">Private or client repository — happy to walk through it on a call.</p>
-            )}
+            <ul className="crt-links">
+              {p.links.map((l) => (
+                <li key={l.href}>
+                  <a href={l.href} target="_blank" rel="noreferrer">
+                    {l.label} <span aria-hidden>↗</span>
+                  </a>
+                </li>
+              ))}
+              <li>
+                <button className="crt-share" onClick={copyLink} aria-live="polite">
+                  {copied ? 'LINK COPIED' : 'COPY LINK TO THIS TAPE'}
+                </button>
+              </li>
+            </ul>
           </section>
         </article>
       </div>
