@@ -3,6 +3,9 @@ import { projects } from '../data/content'
 import { useApp } from '../store/useApp'
 import { goBack, stepProject } from '../flow'
 
+/** Media paths are written root-relative; respect a non-root build base. */
+const asset = (src: string) => import.meta.env.BASE_URL + src.replace(/^\//, '')
+
 const STATUS_LABEL = { LIVE: 'LIVE', 'IN DEV': 'IN DEVELOPMENT', DONE: 'SHIPPED' } as const
 
 /**
@@ -64,6 +67,24 @@ export default function ProjectPage() {
           </dl>
 
           <section>
+            <h2>SCREENS</h2>
+            {p.media.length ? (
+              <div className="crt-media">
+                {p.media.map((src, i) => (
+                  <a key={src} href={asset(src)} target="_blank" rel="noreferrer" aria-label={`Open ${p.title} screenshot ${i + 1} full size`}>
+                    <img src={asset(src)} alt={`${p.title} screenshot ${i + 1}`} loading={i ? 'lazy' : 'eager'} />
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <div className="crt-media crt-media--empty" role="img" aria-label="Screenshots coming soon">
+                <span>NO SIGNAL</span>
+                <small>screenshots coming soon</small>
+              </div>
+            )}
+          </section>
+
+          <section>
             <h2>WHAT IT IS</h2>
             <p>{p.about}</p>
           </section>
@@ -84,22 +105,6 @@ export default function ProjectPage() {
                 <li key={s}>{s}</li>
               ))}
             </ul>
-          </section>
-
-          <section>
-            <h2>SCREENS</h2>
-            {p.media.length ? (
-              <div className="crt-media">
-                {p.media.map((src) => (
-                  <img key={src} src={src} alt={`${p.title} screenshot`} loading="lazy" />
-                ))}
-              </div>
-            ) : (
-              <div className="crt-media crt-media--empty" role="img" aria-label="Screenshots coming soon">
-                <span>NO SIGNAL</span>
-                <small>screenshots coming soon</small>
-              </div>
-            )}
           </section>
 
           <section>
