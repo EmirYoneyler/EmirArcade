@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
-import { projects, byteLines, about } from '../data/content'
-import { OBJECTS, activate } from '../scene/actions'
+import { projects } from '../data/content'
+import { useL, L } from '../i18n'
+import { OBJECTS, activate, objectName } from '../scene/actions'
 import { sfx } from '../audio/sfx'
 import { useApp } from '../store/useApp'
 import { pressStart, goBack, chooseProject, stepProject } from '../flow'
@@ -29,13 +30,14 @@ function Tooltip() {
  */
 function MenuMirror() {
   const setTapeHover = useApp((s) => s.setTapeHover)
+  const { t, projects } = useL()
   return (
-    <nav className="sr-only" aria-label="Project tapes">
+    <nav className="sr-only" aria-label={t.projectTapes}>
       <ul>
         {projects.map((p, i) => (
           <li key={p.id}>
             <button onFocus={() => setTapeHover(i)} onBlur={() => setTapeHover(null)} onClick={() => chooseProject(i)}>
-              Tape {i + 1}: {p.title} — {p.pitch}
+              {t.tape} {i + 1}: {p.title} — {p.pitch}
             </button>
           </li>
         ))}
@@ -47,13 +49,14 @@ function MenuMirror() {
 /** Tab mirror of every object in the room — keyboard & screen-reader access. */
 function RoomMirror() {
   const setFocused = useApp((s) => s.setFocused)
+  const { t } = useL()
   return (
-    <nav className="sr-only" aria-label="Objects in the arcade">
+    <nav className="sr-only" aria-label={t.roomObjects}>
       <ul>
         {OBJECTS.map((o) => (
           <li key={o.id}>
             <button onFocus={() => setFocused(o.id)} onBlur={() => setFocused(null)} onClick={() => activate(o.id)}>
-              {o.name}
+              {objectName(o.id)}
             </button>
           </li>
         ))}
@@ -71,11 +74,12 @@ const typing = () => {
 
 export default function Hud() {
   const view = useApp((s) => s.view)
+  const { t, about } = useL()
 
   // BYTE says hello once the room is up
   useEffect(() => {
     const unsub = useApp.subscribe((s, prev) => {
-      if (s.ready && !prev.ready) setTimeout(() => useApp.getState().view === 'room' && useApp.getState().say(byteLines.welcome), 1400)
+      if (s.ready && !prev.ready) setTimeout(() => useApp.getState().view === 'room' && useApp.getState().say(L().byteLines.welcome), 1400)
     })
     return unsub
   }, [])
@@ -92,7 +96,7 @@ export default function Hud() {
         const s = useApp.getState()
         s.discover('konami')
         sfx('secret')
-        s.say(byteLines.konami)
+        s.say(L().byteLines.konami)
         s.setCheat(true)
         setTimeout(() => useApp.getState().setCheat(false), 12000)
         return
@@ -121,7 +125,7 @@ export default function Hud() {
   return (
     <>
       <a className="skip" href="#" onClick={(e) => (e.preventDefault(), useApp.getState().setMode('classic'))}>
-        Skip to the classic (text) version
+        {t.skipClassic}
       </a>
       <h1 className="hud-title">
         {about.name.toUpperCase()}
@@ -132,12 +136,12 @@ export default function Hud() {
       {view === 'cabinet' && <MenuMirror />}
       {view === 'room' && (
         <button className="hud-btn hud-btn--start" onClick={pressStart}>
-          PRESS START <kbd>ENTER</kbd>
+          {t.pressStart} <kbd>ENTER</kbd>
         </button>
       )}
       {(view === 'cabinet' || view === 'loading') && (
         <button className="hud-btn hud-btn--back" onClick={goBack}>
-          ◀ BACK <kbd>ESC</kbd>
+          ◀ {t.back} <kbd>ESC</kbd>
         </button>
       )}
     </>

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { SECRETS, SECRET_COUNT, type SecretId } from '../data/secrets'
+import { SECRETS, type SecretId } from '../data/secrets'
 import { initialMode, saveMode, type Mode } from '../mode'
 
 /**
@@ -10,10 +10,24 @@ import { initialMode, saveMode, type Mode } from '../mode'
  */
 export type View = 'room' | 'cabinet' | 'loading' | 'project'
 export type Panel = 'cv' | 'contact' | null
-export type Toast = { id: number; text: string }
+export type Toast = { id: number; secret: SecretId; count: number }
+export type Lang = 'en' | 'tr'
 
 const SECRETS_KEY = 'emir-arcade:secrets'
 const MUTED_KEY = 'emir-arcade:muted'
+const LANG_KEY = 'emir-arcade:lang'
+
+/** The visitor's saved choice, else Turkish for Turkish browsers, else English. */
+function loadLang(): Lang {
+  if (typeof window === 'undefined') return 'en'
+  try {
+    const saved = localStorage.getItem(LANG_KEY)
+    if (saved === 'en' || saved === 'tr') return saved
+  } catch {
+    /* fall through to the browser language */
+  }
+  return navigator.language?.toLowerCase().startsWith('tr') ? 'tr' : 'en'
+}
 
 /** Sound is on unless this visitor muted it before. */
 function loadSoundOn() {
@@ -44,6 +58,8 @@ type AppState = {
   bootProgress: number
   setMode: (m: Mode) => void
   setBoot: (stage: BootStage, progress?: number) => void
+  lang: Lang
+  setLang: (l: Lang) => void
   view: View
   lightsOn: boolean
   soundOn: boolean
@@ -102,6 +118,16 @@ export const useApp = create<AppState>((set, get) => ({
     set({ mode, modeAuto: false, view: 'room', musicOn: false, panel: null, dialog: null, ready: false, bootStage: 'rom', bootProgress: 0 })
   },
   setBoot: (bootStage, bootProgress = 0) => set({ bootStage, bootProgress, ready: bootStage === 'done' }),
+  lang: loadLang(),
+  setLang: (lang) => {
+    try {
+      localStorage.setItem(LANG_KEY, lang)
+    } catch {
+      /* not remembered — fine */
+    }
+    document.documentElement.lang = lang
+    set({ lang })
+  },
   view: 'room',
   lightsOn: true,
   soundOn: loadSoundOn(),
@@ -150,7 +176,7 @@ export const useApp = create<AppState>((set, get) => ({
     } catch {
       /* private mode — the counter still works for this visit */
     }
-    const toast = { id: ++toastId, text: `${SECRETS[id]} · ${next.length}/${SECRET_COUNT}` }
+    const toast = { id: ++toastId, secret: id, count: next.length }
     set((s) => ({ secrets: next, toasts: [...s.toasts, toast] }))
   },
   dropToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),

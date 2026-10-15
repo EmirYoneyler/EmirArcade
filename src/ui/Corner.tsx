@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useApp } from '../store/useApp'
-import { site } from '../data/content'
+import { useL } from '../i18n'
 import { track } from '../analytics'
-import { SECRETS, SECRET_COUNT, SECRET_HINTS, type SecretId } from '../data/secrets'
+import { SECRETS, SECRET_COUNT, type SecretId } from '../data/secrets'
 
 /** Pixel speaker icon (no emoji): cone + waves when on, a cross when muted. */
 function Speaker({ on }: { on: boolean }) {
@@ -28,6 +28,8 @@ export default function Corner() {
   const toasts = useApp((s) => s.toasts)
   const dropToast = useApp((s) => s.dropToast)
   const setMode = useApp((s) => s.setMode)
+  const setLang = useApp((s) => s.setLang)
+  const { t, lang, secretNames, secretHints, cvPdf } = useL()
 
   useEffect(() => {
     if (!toasts.length) return
@@ -39,26 +41,34 @@ export default function Corner() {
     <div className="corner">
       <div className="corner__row">
         <button className="corner__btn corner__btn--text" onClick={() => setMode('classic')}>
-          CLASSIC VIEW
+          {t.classicView}
+        </button>
+        <button
+          className="corner__btn corner__btn--text"
+          onClick={() => setLang(lang === 'en' ? 'tr' : 'en')}
+          lang={lang === 'en' ? 'tr' : 'en'}
+          aria-label={t.switchToLabel}
+        >
+          {t.switchTo}
         </button>
         <a
           className="corner__btn corner__btn--text"
-          href={site.cvPdf}
+          href={cvPdf}
           download
           onClick={() => track('CV downloaded', { from: 'corner' })}
         >
-          CV ↓
+          {t.cv}
         </a>
         <button
           className="corner__secrets"
           onClick={() => setListOpen((o) => !o)}
           aria-expanded={listOpen}
           aria-controls="secret-list"
-          aria-label={`Secrets found: ${found} of ${SECRET_COUNT}. Show list`}
+          aria-label={t.secretsAria(found, SECRET_COUNT)}
         >
-          SECRETS {found}/{SECRET_COUNT}
+          {t.secrets} {found}/{SECRET_COUNT}
         </button>
-        <button className="corner__btn" onClick={toggleSound} aria-pressed={soundOn} aria-label={soundOn ? 'Mute sound' : 'Turn sound on'}>
+        <button className="corner__btn" onClick={toggleSound} aria-pressed={soundOn} aria-label={soundOn ? t.mute : t.unmute}>
           <Speaker on={soundOn} />
         </button>
       </div>
@@ -69,18 +79,18 @@ export default function Corner() {
             return (
               <li key={id} data-found={got}>
                 <span aria-hidden>{got ? '■' : '□'}</span>
-                {got ? SECRETS[id] : SECRET_HINTS[id]}
-                <span className="sr-only">{got ? ' — found' : ' — not found yet'}</span>
+                {got ? secretNames[id] : secretHints[id]}
+                <span className="sr-only">{` — ${got ? t.found : t.notFound}`}</span>
               </li>
             )
           })}
         </ul>
       )}
       <ul className="toasts" aria-live="polite">
-        {toasts.map((t) => (
-          <li key={t.id} className="toast">
-            <span>SECRET FOUND</span>
-            {t.text}
+        {toasts.map((toast) => (
+          <li key={toast.id} className="toast">
+            <span>{t.secretFound}</span>
+            {secretNames[toast.secret]} · {toast.count}/{SECRET_COUNT}
           </li>
         ))}
       </ul>

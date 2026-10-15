@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useApp } from '../store/useApp'
-import { about, contact, cv, projects, site } from '../data/content'
+import { useL } from '../i18n'
 import { track } from '../analytics'
 import RecentRepos from './RecentRepos'
 import ContactForm from './ContactForm'
 
 /** Paper-style modal sheet used for the CV and the contact card. */
 function Sheet({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
+  const { t } = useL()
   const closeBtn = useRef<HTMLButtonElement>(null)
   useEffect(() => {
     const prev = document.activeElement as HTMLElement | null
@@ -17,7 +18,7 @@ function Sheet({ title, children, onClose }: { title: string; children: React.Re
     <div className="sheet-backdrop" onClick={onClose}>
       <section className="sheet" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
         <span className="sheet__pin" aria-hidden />
-        <button ref={closeBtn} className="sheet__close" onClick={onClose} aria-label="Close">
+        <button ref={closeBtn} className="sheet__close" onClick={onClose} aria-label={t.close}>
           ✕
         </button>
         {children}
@@ -27,6 +28,7 @@ function Sheet({ title, children, onClose }: { title: string; children: React.Re
 }
 
 function CV() {
+  const { t, about, cv, projects, cvPdf } = useL()
   return (
     <>
       <h2 className="sheet__title">{about.name}</h2>
@@ -35,35 +37,35 @@ function CV() {
       </p>
       <p>{about.summary}</p>
       <p className="sheet__row">
-        <a className="sheet__btn" href={site.cvPdf} download onClick={() => track('CV downloaded', { from: 'cork board' })}>
-          Download PDF
+        <a className="sheet__btn" href={cvPdf} download onClick={() => track('CV downloaded', { from: 'cork board' })}>
+          {t.downloadPdf}
         </a>
         <a className="sheet__btn" href={about.linkedin} target="_blank" rel="noreferrer">
           LinkedIn ↗
         </a>
       </p>
-      <h3>Experience</h3>
+      <h3>{t.experience}</h3>
       {cv.experience.map((e) => (
         <div key={e.title} className="sheet__item">
           <strong>{e.title}</strong> — {e.place} <em>({e.when})</em>
           <div>{e.detail}</div>
         </div>
       ))}
-      <h3>Education</h3>
+      <h3>{t.education}</h3>
       {cv.education.map((e) => (
         <div key={e.title} className="sheet__item">
           <strong>{e.title}</strong> — {e.place} <em>({e.when})</em>
         </div>
       ))}
-      <h3>Focus</h3>
+      <h3>{t.focus}</h3>
       <ul>
         {cv.focus.map((f) => (
           <li key={f}>{f}</li>
         ))}
       </ul>
-      <h3>Recently on GitHub</h3>
+      <h3>{t.recentGithub}</h3>
       <RecentRepos />
-      <h3>Projects</h3>
+      <h3>{t.projects}</h3>
       <ul>
         {projects.map((p) => (
           <li key={p.id}>
@@ -76,6 +78,7 @@ function CV() {
 }
 
 function Contact() {
+  const { t, contact } = useL()
   const [copied, setCopied] = useState(false)
   const copy = async () => {
     try {
@@ -88,18 +91,18 @@ function Contact() {
   }
   return (
     <>
-      <h2 className="sheet__title">Open for work</h2>
+      <h2 className="sheet__title">{t.openForWork}</h2>
       <p>{contact.pitch}</p>
-      <h3>Send a message</h3>
+      <h3>{t.sendMessage}</h3>
       <ContactForm />
-      <h3>Email</h3>
+      <h3>{t.email}</h3>
       <p className="sheet__row">
         <a href={`mailto:${contact.email}`}>{contact.email}</a>
         <button className="sheet__btn" onClick={copy}>
-          {copied ? 'Copied' : 'Copy'}
+          {copied ? t.copied : t.copy}
         </button>
       </p>
-      <h3>Profiles</h3>
+      <h3>{t.profiles}</h3>
       <ul>
         {contact.links.map((l) => (
           <li key={l.href}>
@@ -114,12 +117,13 @@ function Contact() {
 }
 
 export default function Panels() {
+  const { t } = useL()
   const panel = useApp((s) => s.panel)
   const setPanel = useApp((s) => s.setPanel)
   if (!panel) return null
   const close = () => setPanel(null)
   return (
-    <Sheet title={panel === 'cv' ? 'Curriculum vitae' : 'Contact'} onClose={close}>
+    <Sheet title={panel === 'cv' ? t.cvTitle : t.contactTitle} onClose={close}>
       {panel === 'cv' ? <CV /> : <Contact />}
     </Sheet>
   )

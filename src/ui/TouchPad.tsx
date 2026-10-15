@@ -3,6 +3,7 @@ import { useApp } from '../store/useApp'
 import { input } from '../scene/crt/games'
 import { projects } from '../data/content'
 import { chooseProject } from '../flow'
+import { useL } from '../i18n'
 
 type Key = 'up' | 'down' | 'left' | 'right' | 'fire'
 
@@ -35,14 +36,15 @@ function Pad({ k, label, wide }: { k: Key; label: string; wide?: boolean }) {
 export default function TouchPad() {
   const view = useApp((s) => s.view)
   const game = useApp((s) => s.game)
+  const { t } = useL()
   const [touch, setTouch] = useState(false)
   useEffect(() => setTouch(window.matchMedia('(pointer: coarse)').matches), [])
   if (!touch || view !== 'cabinet') return null
   return (
     <>
     {/* on phones the rack is hard to tap, so the tapes also sit in a strip */}
-    <nav className="tapestrip" aria-label="Project tapes">
-      <span className="tapestrip__label">TAPES</span>
+    <nav className="tapestrip" aria-label={t.projectTapes}>
+      <span className="tapestrip__label">{t.tapes}</span>
       {projects.map((p, i) => (
         <button key={p.id} className="tapestrip__tape" onClick={() => chooseProject(i)}>
           <small>{String(i + 1).padStart(2, '0')}</small>
@@ -50,7 +52,7 @@ export default function TouchPad() {
         </button>
       ))}
     </nav>
-    <div className="touchpad" aria-label="Game controls">
+    <div className="touchpad" aria-label={t.gameControls}>
       {game === 'rally' ? (
         <div className="touchpad__col">
           <Pad k="up" label="▲" />

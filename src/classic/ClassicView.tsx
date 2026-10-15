@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { about, contact, cv, projects, site, skills } from '../data/content'
+import { skills } from '../data/content'
+import { useL } from '../i18n'
 import { linkedProjectIndex } from '../share'
 import { track } from '../analytics'
 import { useApp } from '../store/useApp'
@@ -8,8 +9,6 @@ import RecentRepos from '../ui/RecentRepos'
 import ContactForm from '../ui/ContactForm'
 import NowListening from '../ui/NowListening'
 
-const STATUS = { LIVE: 'Live', 'IN DEV': 'In development', DONE: 'Shipped' } as const
-
 /**
  * The classic portfolio: one fast, plain, readable page using the same
  * content as the arcade. It is also pre-rendered into index.html at build
@@ -17,6 +16,8 @@ const STATUS = { LIVE: 'Live', 'IN DEV': 'In development', DONE: 'Shipped' } as 
  */
 export default function ClassicView() {
   const setMode = useApp((s) => s.setMode)
+  const setLang = useApp((s) => s.setLang)
+  const { t, lang, about, contact, cv, projects, cvPdf } = useL()
   // client-only: was classic picked for them (small/weak device)?
   const [auto, setAuto] = useState(false)
   useEffect(() => setAuto(useApp.getState().modeAuto), [])
@@ -29,23 +30,33 @@ export default function ClassicView() {
   return (
     <div className="classic">
       <a className="skip" href="#projects">
-        Skip to projects
+        {t.skipProjects}
       </a>
       <header className="c-header">
         <div className="c-wrap c-header__row">
-          <a href="#top" className="c-brand" aria-label="Home">
+          <a href="#top" className="c-brand" aria-label={t.home}>
             <ByteMark size={28} />
             <span>EMIR</span>
           </a>
-          <nav aria-label="Sections" className="c-nav">
-            <a href="#about">About</a>
-            <a href="#projects">Projects</a>
-            <a href="#skills">Skills</a>
-            <a href="#contact">Contact</a>
+          <nav aria-label={t.sections} className="c-nav">
+            <a href="#about">{t.nav.about}</a>
+            <a href="#projects">{t.nav.projects}</a>
+            <a href="#skills">{t.nav.skills}</a>
+            <a href="#contact">{t.nav.contact}</a>
           </nav>
-          <button className="c-btn c-btn--ghost" onClick={() => setMode('arcade')}>
-            ▶ 3D arcade
-          </button>
+          <div className="c-header__actions">
+            <button
+              className="c-btn c-btn--ghost"
+              onClick={() => setLang(lang === 'en' ? 'tr' : 'en')}
+              lang={lang === 'en' ? 'tr' : 'en'}
+              aria-label={t.switchToLabel}
+            >
+              {t.switchTo}
+            </button>
+            <button className="c-btn c-btn--ghost" onClick={() => setMode('arcade')}>
+              {t.arcade}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -57,10 +68,10 @@ export default function ClassicView() {
           <NowListening />
           <div className="c-actions">
             <a className="c-btn" href={`mailto:${about.email}`}>
-              Email me
+              {t.emailMe}
             </a>
-            <a className="c-btn c-btn--ghost" href={site.cvPdf} download onClick={() => track('CV downloaded', { from: 'classic' })}>
-              Download CV
+            <a className="c-btn c-btn--ghost" href={cvPdf} download onClick={() => track('CV downloaded', { from: 'classic' })}>
+              {t.downloadCv}
             </a>
             <a className="c-btn c-btn--ghost" href={about.linkedin} target="_blank" rel="noreferrer">
               LinkedIn
@@ -75,18 +86,18 @@ export default function ClassicView() {
             <aside className="c-try">
               <ByteMark size={40} />
               <div>
-                <strong>This portfolio is also a tiny 3D arcade.</strong>
-                <p>Your browser doesn't support WebGL, so you're seeing the classic version. Open it in a recent Chrome, Firefox or Safari to play.</p>
+                <strong>{t.autoTitle}</strong>
+                <p>{t.autoText}</p>
               </div>
             </aside>
           )}
         </section>
 
         <section id="about" className="c-section" aria-labelledby="about-h">
-          <h2 id="about-h">About</h2>
+          <h2 id="about-h">{t.nav.about}</h2>
           <div className="c-grid2">
             <div>
-              <h3>Experience</h3>
+              <h3>{t.experience}</h3>
               {cv.experience.map((e) => (
                 <div key={e.title} className="c-entry">
                   <div className="c-entry__head">
@@ -99,7 +110,7 @@ export default function ClassicView() {
               ))}
             </div>
             <div>
-              <h3>Education</h3>
+              <h3>{t.education}</h3>
               {cv.education.map((e) => (
                 <div key={e.title} className="c-entry">
                   <div className="c-entry__head">
@@ -114,14 +125,14 @@ export default function ClassicView() {
         </section>
 
         <section id="projects" className="c-section" aria-labelledby="projects-h">
-          <h2 id="projects-h">Projects</h2>
+          <h2 id="projects-h">{t.nav.projects}</h2>
           <div className="c-projects">
             {projects.map((p, i) => (
               <article key={p.id} className="c-card" aria-labelledby={`p-${p.id}`}>
                 <div className="c-card__top">
                   <span className="c-num">{String(i + 1).padStart(2, '0')}</span>
                   <span className="c-status" data-status={p.status}>
-                    {STATUS[p.status]}
+                    {t.statusPlain[p.status]}
                   </span>
                 </div>
                 <h3 id={`p-${p.id}`}>{p.title}</h3>
@@ -129,11 +140,11 @@ export default function ClassicView() {
                 <p className="c-muted c-role">{p.role}</p>
                 <p>{p.about}</p>
                 <dl className="c-case">
-                  <dt>Problem</dt>
+                  <dt>{t.problem}</dt>
                   <dd>{p.caseStudy.problem}</dd>
-                  <dt>Approach</dt>
+                  <dt>{t.approach}</dt>
                   <dd>{p.caseStudy.approach}</dd>
-                  <dt>Outcome</dt>
+                  <dt>{t.outcome}</dt>
                   <dd>{p.caseStudy.outcome}</dd>
                 </dl>
                 <ul className="c-list">
@@ -141,7 +152,7 @@ export default function ClassicView() {
                     <li key={h}>{h}</li>
                   ))}
                 </ul>
-                <ul className="c-chips" aria-label="Tech stack">
+                <ul className="c-chips" aria-label={t.techStack}>
                   {p.stack.map((s) => (
                     <li key={s}>{s}</li>
                   ))}
@@ -161,12 +172,12 @@ export default function ClassicView() {
         </section>
 
         <section className="c-section c-github" aria-labelledby="github-h">
-          <h2 id="github-h">Recently on GitHub</h2>
+          <h2 id="github-h">{t.recentGithub}</h2>
           <RecentRepos className="recent-repos c-repos" />
         </section>
 
         <section id="skills" className="c-section" aria-labelledby="skills-h">
-          <h2 id="skills-h">Skills</h2>
+          <h2 id="skills-h">{t.nav.skills}</h2>
           <ul className="c-chips c-chips--big">
             {skills.map((s) => (
               <li key={s}>{s}</li>
@@ -180,7 +191,7 @@ export default function ClassicView() {
         </section>
 
         <section id="contact" className="c-section c-contact" aria-labelledby="contact-h">
-          <h2 id="contact-h">Contact</h2>
+          <h2 id="contact-h">{t.nav.contact}</h2>
           <p className="c-lead">{contact.pitch}</p>
           <p>
             <a className="c-email" href={`mailto:${contact.email}`}>
@@ -203,7 +214,7 @@ export default function ClassicView() {
 
       <footer className="c-footer c-wrap">
         <ByteMark size={20} />
-        <span>Built by hand in Istanbul. BYTE says hi.</span>
+        <span>{t.footer}</span>
       </footer>
     </div>
   )
