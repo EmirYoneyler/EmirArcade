@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { contact } from '../data/content'
+import { useL } from '../i18n'
 
 type State = 'idle' | 'sending' | 'sent' | 'error'
 
@@ -10,6 +11,7 @@ type State = 'idle' | 'sending' | 'sent' | 'error'
  */
 export default function ContactForm() {
   const [state, setState] = useState<State>('idle')
+  const { t } = useL()
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -34,31 +36,31 @@ export default function ContactForm() {
   if (state === 'sent')
     return (
       <p className="contact-form__done" role="status">
-        Thanks — your message is on its way. I'll reply to the email you gave.
+        {t.sent}
       </p>
     )
 
   return (
     <form className="contact-form" onSubmit={submit}>
       <label>
-        Name
+        {t.name}
         <input id="cf-name" name="name" required autoComplete="name" maxLength={80} />
       </label>
       <label>
-        Email
+        {t.email}
         <input id="cf-email" name="email" type="email" required autoComplete="email" maxLength={120} />
       </label>
       <label>
-        Message
+        {t.message}
         <textarea id="cf-message" name="message" required rows={4} maxLength={3000} />
       </label>
       <input name="_honey" tabIndex={-1} autoComplete="off" className="contact-form__trap" aria-hidden />
       <button type="submit" disabled={state === 'sending'}>
-        {state === 'sending' ? 'Sending…' : 'Send message'}
+        {state === 'sending' ? t.sending : t.send}
       </button>
       {state === 'error' && (
         <p className="contact-form__error" role="alert">
-          Couldn't send right now. Please email <a href={`mailto:${contact.email}`}>{contact.email}</a> instead.
+          {t.sendError} <a href={`mailto:${contact.email}`}>{contact.email}</a> {t.instead}
         </p>
       )}
     </form>

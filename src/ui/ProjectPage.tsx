@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { projects } from '../data/content'
+import { useL } from '../i18n'
 import { useApp } from '../store/useApp'
 import { goBack, stepProject } from '../flow'
 import { projectUrl } from '../share'
@@ -8,8 +8,6 @@ import { track } from '../analytics'
 /** Media paths are written root-relative; respect a non-root build base. */
 const asset = (src: string) => import.meta.env.BASE_URL + src.replace(/^\//, '')
 
-const STATUS_LABEL = { LIVE: 'LIVE', 'IN DEV': 'IN DEVELOPMENT', DONE: 'SHIPPED' } as const
-
 /**
  * Full-screen project page that the camera "lands" in. Styled as the CRT
  * we just flew into: amber phosphor on black, scanlines, curved edges.
@@ -17,6 +15,7 @@ const STATUS_LABEL = { LIVE: 'LIVE', 'IN DEV': 'IN DEVELOPMENT', DONE: 'SHIPPED'
 export default function ProjectPage() {
   const view = useApp((s) => s.view)
   const id = useApp((s) => s.selectedProject)
+  const { t, projects } = useL()
   const open = view === 'project'
   const index = Math.max(0, projects.findIndex((p) => p.id === id))
   const p = projects[index]
@@ -47,7 +46,7 @@ export default function ProjectPage() {
       await navigator.clipboard.writeText(projectUrl(p.id))
       setCopied(true)
     } catch {
-      window.prompt('Copy this link:', projectUrl(p.id))
+      window.prompt(t.copyPrompt, projectUrl(p.id))
     }
   }
 
@@ -61,9 +60,9 @@ export default function ProjectPage() {
         <article className="crt-page__content" key={p.id}>
           <header className="crt-head">
             <p className="crt-kicker">
-              TAPE {String(index + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
+              {t.tape.toUpperCase()} {String(index + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
               <span className="crt-status" data-status={p.status}>
-                {STATUS_LABEL[p.status]}
+                {t.status[p.status]}
               </span>
             </p>
             <h1 ref={heading} tabIndex={-1}>
@@ -74,58 +73,58 @@ export default function ProjectPage() {
 
           <dl className="crt-meta">
             <div>
-              <dt>ROLE</dt>
+              <dt>{t.role}</dt>
               <dd>{p.role}</dd>
             </div>
             <div>
-              <dt>STATUS</dt>
-              <dd>{STATUS_LABEL[p.status]}</dd>
+              <dt>{t.statusH}</dt>
+              <dd>{t.status[p.status]}</dd>
             </div>
           </dl>
 
           <section>
-            <h2>SCREENS</h2>
+            <h2>{t.screens}</h2>
             {p.media.length ? (
               <div className="crt-media">
                 {p.media.map((src, i) => (
-                  <a key={src} href={asset(src)} target="_blank" rel="noreferrer" aria-label={`Open ${p.title} screenshot ${i + 1} full size`}>
-                    <img src={asset(src)} alt={`${p.title} screenshot ${i + 1}`} loading={i ? 'lazy' : 'eager'} />
+                  <a key={src} href={asset(src)} target="_blank" rel="noreferrer" aria-label={t.openShot(p.title, i + 1)}>
+                    <img src={asset(src)} alt={t.shot(p.title, i + 1)} loading={i ? 'lazy' : 'eager'} />
                   </a>
                 ))}
               </div>
             ) : (
-              <div className="crt-media crt-media--empty" role="img" aria-label="Screenshots coming soon">
-                <span>NO SIGNAL</span>
-                <small>screenshots coming soon</small>
+              <div className="crt-media crt-media--empty" role="img" aria-label={t.comingSoon}>
+                <span>{t.noSignal}</span>
+                <small>{t.comingSoon}</small>
               </div>
             )}
           </section>
 
           <section>
-            <h2>CASE STUDY</h2>
+            <h2>{t.caseStudy}</h2>
             <dl className="crt-case">
               <div>
-                <dt>PROBLEM</dt>
+                <dt>{t.problem.toUpperCase()}</dt>
                 <dd>{p.caseStudy.problem}</dd>
               </div>
               <div>
-                <dt>APPROACH</dt>
+                <dt>{t.approach.toUpperCase()}</dt>
                 <dd>{p.caseStudy.approach}</dd>
               </div>
               <div>
-                <dt>OUTCOME</dt>
+                <dt>{t.outcome.toUpperCase()}</dt>
                 <dd>{p.caseStudy.outcome}</dd>
               </div>
             </dl>
           </section>
 
           <section>
-            <h2>WHAT IT IS</h2>
+            <h2>{t.whatItIs}</h2>
             <p>{p.about}</p>
           </section>
 
           <section>
-            <h2>HIGHLIGHTS</h2>
+            <h2>{t.highlights}</h2>
             <ul className="crt-list">
               {p.highlights.map((h) => (
                 <li key={h}>{h}</li>
@@ -134,7 +133,7 @@ export default function ProjectPage() {
           </section>
 
           <section>
-            <h2>STACK</h2>
+            <h2>{t.stack}</h2>
             <ul className="crt-chips">
               {p.stack.map((s) => (
                 <li key={s}>{s}</li>
@@ -143,7 +142,7 @@ export default function ProjectPage() {
           </section>
 
           <section>
-            <h2>LINKS</h2>
+            <h2>{t.links}</h2>
             <ul className="crt-links">
               {p.links.map((l) => (
                 <li key={l.href}>
@@ -154,7 +153,7 @@ export default function ProjectPage() {
               ))}
               <li>
                 <button className="crt-share" onClick={copyLink} aria-live="polite">
-                  {copied ? 'LINK COPIED' : 'COPY LINK TO THIS TAPE'}
+                  {copied ? t.linkCopied : t.copyLink}
                 </button>
               </li>
             </ul>
@@ -162,15 +161,15 @@ export default function ProjectPage() {
         </article>
       </div>
 
-      <nav className="crt-bar" aria-label="Project navigation">
-        <button onClick={() => stepProject(-1)} aria-label={`Previous project: ${prev.title}`}>
-          ◀ PREV <span className="crt-bar__name">{prev.cartridge}</span>
+      <nav className="crt-bar" aria-label={t.projectNav}>
+        <button onClick={() => stepProject(-1)} aria-label={t.prevProject(prev.title)}>
+          ◀ {t.prev} <span className="crt-bar__name">{prev.cartridge}</span>
         </button>
         <button className="crt-bar__back" onClick={goBack}>
-          BACK <kbd>ESC</kbd>
+          {t.back} <kbd>ESC</kbd>
         </button>
-        <button onClick={() => stepProject(1)} aria-label={`Next project: ${next.title}`}>
-          <span className="crt-bar__name">{next.cartridge}</span> NEXT ▶
+        <button onClick={() => stepProject(1)} aria-label={t.nextProject(next.title)}>
+          <span className="crt-bar__name">{next.cartridge}</span> {t.next} ▶
         </button>
       </nav>
 

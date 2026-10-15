@@ -1,7 +1,7 @@
 import { projects } from './data/content'
 import { useApp } from './store/useApp'
 import { flyTo } from './cameraBridge'
-import { byteLines } from './data/content'
+import { L } from './i18n'
 
 /**
  * High-level navigation. UI, keyboard and 3D all call these — never flyTo
@@ -21,7 +21,7 @@ export async function pressStart() {
   const game = onGameStart?.() ?? 'rally'
   get().setGame(game)
   get().setView('cabinet')
-  get().say(game === 'rally' ? byteLines.rally : byteLines.patrol)
+  get().say(game === 'rally' ? L().byteLines.rally : L().byteLines.patrol)
   await flyTo('cabinet')
 }
 

@@ -87,9 +87,17 @@ shows the current/last track and BYTE mentions it; the classic view gets a
 4. In Vercel → Project → Settings → Environment Variables add
    `LASTFM_API_KEY` and `LASTFM_USER`, then redeploy.
 
+## Languages (English / Türkçe)
+
+English lives in `src/data/content.ts`; Turkish in `src/i18n/tr.ts` (content)
+and `src/i18n/ui.ts` (buttons and labels). Visitors with a Turkish browser
+start in Turkish; the EN/TR button switches and is remembered. The 3D scene's
+own text (tapes, CRT, boot screen) stays English on purpose. When you add a
+project, add its Turkish text to `tr.ts` too (it falls back to English).
+
 ## CV, share links and analytics
 
-- **CV PDF** — `public/emir-yoneyler-cv.pdf` is generated from `src/data/content.ts`.
+- **CV PDF** — `public/emir-yoneyler-cv.pdf` and `emir-yoneyler-cv-tr.pdf` are generated from the content files.
   After editing your CV or projects, run `npm run build && npm run cv:pdf`
   (needs Playwright with Chromium) and commit the new PDF.
 - **Share links** — every project has its own page, `/projects/<id>`, with its

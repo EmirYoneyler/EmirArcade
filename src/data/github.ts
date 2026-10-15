@@ -63,12 +63,12 @@ export function useRecentRepos() {
   return repos
 }
 
-/** "today", "3d ago", "2w ago", "5mo ago" */
-export function ago(iso: string) {
+/** "today", "3d ago", "2w ago", "5mo ago" (words passed in for the current language) */
+export function ago(iso: string, w = { today: 'today', d: 'd ago', w: 'w ago', mo: 'mo ago', y: 'y ago' }) {
   const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000)
-  if (days < 1) return 'today'
-  if (days < 7) return `${days}d ago`
-  if (days < 45) return `${Math.floor(days / 7)}w ago`
-  if (days < 365) return `${Math.floor(days / 30)}mo ago`
-  return `${Math.floor(days / 365)}y ago`
+  if (days < 1) return w.today
+  if (days < 7) return `${days}${w.d}`
+  if (days < 45) return `${Math.floor(days / 7)}${w.w}`
+  if (days < 365) return `${Math.floor(days / 30)}${w.mo}`
+  return `${Math.floor(days / 365)}${w.y}`
 }

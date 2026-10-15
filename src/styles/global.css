@@ -479,3 +479,40 @@ html[data-mode='classic'] body { overflow: auto; }
 .c-case dd { margin: 0; }
 a.corner__btn { display: inline-flex; align-items: center; text-decoration: none; }
 a.sheet__btn { text-decoration: none; display: inline-block; }
+.c-header__actions { display: flex; gap: 8px; }
+
+/* Silkscreen has no dotless ı: in Turkish, set pixel text in capitals (ı → I, i → İ) */
+:lang(tr) .boot,
+:lang(tr) .hud-title,
+:lang(tr) .tooltip,
+:lang(tr) .hud-btn,
+:lang(tr) .sr-only button,
+:lang(tr) .crt-page h1,
+:lang(tr) .crt-page h2,
+:lang(tr) .crt-kicker,
+:lang(tr) .crt-bar,
+:lang(tr) .crt-status,
+:lang(tr) .crt-meta dt,
+:lang(tr) .crt-media--empty span,
+:lang(tr) .crt-links a,
+:lang(tr) .crt-share,
+:lang(tr) .dialog__name,
+:lang(tr) .dialog__text,
+:lang(tr) .corner__secrets,
+:lang(tr) .toast,
+:lang(tr) .sheet__title,
+:lang(tr) .sheet h3,
+:lang(tr) .sheet__btn,
+:lang(tr) .skip,
+:lang(tr) .corner__btn--text,
+:lang(tr) .classic h1,
+:lang(tr) .classic h2,
+:lang(tr) .classic .c-brand,
+:lang(tr) .classic .c-btn,
+:lang(tr) .classic .c-num,
+:lang(tr) .c-card h3,
+:lang(tr) .c-chips--big li,
+:lang(tr) .contact-form button,
+:lang(tr) .touchpad__btn,
+:lang(tr) .tapestrip__label,
+:lang(tr) .tapestrip__tape { text-transform: uppercase; }

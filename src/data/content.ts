@@ -212,6 +212,7 @@ export const site = {
   ogImage: '/og.jpg',
   /** Regenerate after editing the CV: `npm run build && npm run cv:pdf`. */
   cvPdf: '/emir-yoneyler-cv.pdf',
+  cvPdfTr: '/emir-yoneyler-cv-tr.pdf',
 }
 
 /** CV shown when the cork board is clicked (and in the classic view). */

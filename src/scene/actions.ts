@@ -1,4 +1,5 @@
-import { byteLines, projects, skillProjects, type Skill } from '../data/content'
+import { projects, skillProjects, type Skill } from '../data/content'
+import { L } from '../i18n'
 import { SECRET_COUNT } from '../data/secrets'
 import { useApp } from '../store/useApp'
 import { sfx } from '../audio/sfx'
@@ -20,7 +21,7 @@ export const OBJECTS = [
   { id: 'switch', name: 'Light switch' },
 ] as const
 export type ObjectId = (typeof OBJECTS)[number]['id']
-export const objectName = (id: ObjectId) => OBJECTS.find((o) => o.id === id)!.name
+export const objectName = (id: ObjectId) => L().objectNames[id] ?? OBJECTS.find((o) => o.id === id)!.name
 
 const fill = (s: string, vars: Record<string, string>) => s.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '')
 const pick = <T,>(xs: readonly T[]) => xs[Math.floor(Math.random() * xs.length)]
@@ -35,41 +36,41 @@ export function activate(id: ObjectId) {
   get().activate(id)
   if (get().secrets.length > before) {
     sfx('secret')
-    if (get().secrets.length === SECRET_COUNT) setTimeout(() => say(byteLines.allSecrets), 3500)
+    if (get().secrets.length === SECRET_COUNT) setTimeout(() => say(L().byteLines.allSecrets), 3500)
   } else sfx('blip')
 
   const s = get()
   switch (id) {
     case 'cat':
       sfx('meow')
-      return say(pick(byteLines.cat))
+      return say(pick(L().byteLines.cat))
     case 'clock':
-      return say(fill(byteLines.clock, { time: istanbulTime().label }))
+      return say(fill(L().byteLines.clock, { time: istanbulTime().label }))
     case 'window':
       sfx('star')
-      return say(byteLines.window)
+      return say(L().byteLines.window)
     case 'cork':
       s.setPanel('cv')
-      return say(byteLines.cork)
+      return say(L().byteLines.cork)
     case 'sign':
       s.setPanel('contact')
-      return say(byteLines.sign)
+      return say(L().byteLines.sign)
     case 'plant':
-      return say(pick(byteLines.plant))
+      return say(pick(L().byteLines.plant))
     case 'switch':
       sfx('thunk')
       s.toggleLights()
-      return say(get().lightsOn ? byteLines.switchOn : byteLines.switchOff)
+      return say(get().lightsOn ? L().byteLines.switchOn : L().byteLines.switchOff)
     case 'jukebox': {
       const on = !s.musicOn
       s.setMusic(on)
       // if Emir's real listening is known (YouTube Music → Last.fm), BYTE gossips about it
       const track = currentTrack(latestListening)
       if (track) {
-        const line = latestListening?.nowPlaying ? byteLines.listeningNow : byteLines.listenedLast
+        const line = latestListening?.nowPlaying ? L().byteLines.listeningNow : L().byteLines.listenedLast
         return say(fill(line, { title: track.title, artist: track.artist }))
       }
-      return say(on ? (s.soundOn ? fill(byteLines.jukeboxOn, { song: songTitle() }) : byteLines.jukeboxMuted) : byteLines.jukeboxOff)
+      return say(on ? (s.soundOn ? fill(L().byteLines.jukeboxOn, { song: songTitle() }) : L().byteLines.jukeboxMuted) : L().byteLines.jukeboxOff)
     }
     case 'claw':
       // the claw component picks the plush and calls clawResult() when it lands
@@ -82,7 +83,7 @@ export function activate(id: ObjectId) {
 export function clawResult(skill: Skill) {
   sfx('coin')
   const used = skillProjects[skill].map((id) => projects.find((p) => p.id === id)?.title).filter(Boolean)
-  say(used.length ? fill(byteLines.claw, { skill, projects: used.join(', ') }) : fill(byteLines.clawNone, { skill }))
+  say(used.length ? fill(L().byteLines.claw, { skill, projects: used.join(', ') }) : fill(L().byteLines.clawNone, { skill }))
 }
 
 const istFmt = new Intl.DateTimeFormat('en-GB', {

@@ -22,8 +22,9 @@ for (const id of ssr.projectIds) {
   )
 }
 
-// print-ready CV; `npm run cv:pdf` turns it into public/emir-yoneyler-cv.pdf
-writeFileSync(resolve(dist, 'cv.html'), ssr.cvHtml())
+// print-ready CVs; `npm run cv:pdf` turns them into the PDFs in public/
+writeFileSync(resolve(dist, 'cv.html'), ssr.cvHtml('en'))
+writeFileSync(resolve(dist, 'cv-tr.html'), ssr.cvHtml('tr'))
 
 const url = ssr.siteUrl.replace(/\/$/, '')
 writeFileSync(resolve(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${url}/sitemap.xml\n`)

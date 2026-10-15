@@ -4,8 +4,9 @@
  */
 import { renderToString } from 'react-dom/server'
 import ClassicView from './classic/ClassicView'
-import { about, cv, projects, site, skills } from './data/content'
+import { about, projects, site, skills } from './data/content'
 import { projectPath } from './share'
+import { localized, type Lang } from './i18n'
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
 
@@ -85,7 +86,14 @@ const h = (s: string) => esc(s).replace(/>/g, '&gt;')
 const bare = (u: string) => u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
 
 /** A one-page, print-ready CV (A4). scripts/cv-pdf.mjs turns it into the PDF. */
-export function cvHtml() {
+const CV_HEAD = {
+  en: { profile: 'Profile', experience: 'Experience', projects: 'Selected projects', education: 'Education', skills: 'Skills' },
+  tr: { profile: 'Profil', experience: 'Deneyim', projects: 'Seçilmiş projeler', education: 'Eğitim', skills: 'Yetenekler' },
+}
+
+export function cvHtml(lang: Lang = 'en') {
+  const { about, cv, projects, t } = localized(lang)
+  const H = CV_HEAD[lang]
   const site_ = site.url.replace(/\/$/, '')
   const contacts = [
     `<a href="mailto:${about.email}">${about.email}</a>`,
@@ -97,13 +105,13 @@ export function cvHtml() {
     .map((p) => {
       const link = p.links[0]
       return `<div class="item">
-        <div class="row"><strong>${h(p.title)}</strong><span class="meta">${h(p.status === 'LIVE' ? 'Live' : p.status === 'DONE' ? 'Shipped' : 'In development')}</span></div>
+        <div class="row"><strong>${h(p.title)}</strong><span class="meta">${h(t.statusPlain[p.status])}</span></div>
         <p>${h(p.pitch)} ${h(p.caseStudy.outcome)}</p>
         <p class="stack">${h(p.stack.join(' · '))}${link ? ` — <a href="${link.href}">${h(bare(link.href))}</a>` : ''}</p>
       </div>`
     })
     .join('')
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8">
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8">
 <title>${h(about.name)} — CV</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -130,19 +138,19 @@ li { margin: 1px 0; }
   <p class="sub">${h(about.title)} · ${h(about.location)}</p>
   <p class="contacts">${contacts}</p>
 </header>
-<h2>Profile</h2>
+<h2>${H.profile}</h2>
 <p>${h(about.summary)}</p>
-<h2>Experience</h2>
+<h2>${H.experience}</h2>
 ${cv.experience
   .map((e) => `<div class="item"><div class="row"><strong>${h(e.title)} — ${h(e.place)}</strong><span class="meta">${h(e.when)}</span></div><p>${h(e.detail)}</p></div>`)
   .join('')}
-<h2>Selected projects</h2>
+<h2>${H.projects}</h2>
 ${proj}
-<h2>Education</h2>
+<h2>${H.education}</h2>
 ${cv.education
   .map((e) => `<div class="item"><div class="row"><strong>${h(e.title)} — ${h(e.place)}</strong><span class="meta">${h(e.when)}</span></div></div>`)
   .join('')}
-<h2>Skills</h2>
+<h2>${H.skills}</h2>
 <p><strong>${h(skills.join(' · '))}</strong></p>
 <ul>${cv.focus.map((f) => `<li>${h(f)}</li>`).join('')}</ul>
 </body></html>`
