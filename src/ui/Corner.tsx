@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useApp } from '../store/useApp'
-import { SECRET_COUNT } from '../data/secrets'
+import { SECRETS, SECRET_COUNT, SECRET_HINTS, type SecretId } from '../data/secrets'
 
 /** Pixel speaker icon (no emoji): cone + waves when on, a cross when muted. */
 function Speaker({ on }: { on: boolean }) {
@@ -20,7 +20,9 @@ function Speaker({ on }: { on: boolean }) {
 export default function Corner() {
   const soundOn = useApp((s) => s.soundOn)
   const toggleSound = useApp((s) => s.toggleSound)
-  const found = useApp((s) => s.secrets.length)
+  const secrets = useApp((s) => s.secrets)
+  const found = secrets.length
+  const [listOpen, setListOpen] = useState(false)
   const toasts = useApp((s) => s.toasts)
   const dropToast = useApp((s) => s.dropToast)
   const setMode = useApp((s) => s.setMode)
@@ -37,13 +39,33 @@ export default function Corner() {
         <button className="corner__btn corner__btn--text" onClick={() => setMode('classic')}>
           CLASSIC VIEW
         </button>
-        <span className="corner__secrets" aria-label={`Secrets found: ${found} of ${SECRET_COUNT}`}>
+        <button
+          className="corner__secrets"
+          onClick={() => setListOpen((o) => !o)}
+          aria-expanded={listOpen}
+          aria-controls="secret-list"
+          aria-label={`Secrets found: ${found} of ${SECRET_COUNT}. Show list`}
+        >
           SECRETS {found}/{SECRET_COUNT}
-        </span>
+        </button>
         <button className="corner__btn" onClick={toggleSound} aria-pressed={soundOn} aria-label={soundOn ? 'Mute sound' : 'Turn sound on'}>
           <Speaker on={soundOn} />
         </button>
       </div>
+      {listOpen && (
+        <ul className="secret-list" id="secret-list">
+          {(Object.keys(SECRETS) as SecretId[]).map((id) => {
+            const got = secrets.includes(id)
+            return (
+              <li key={id} data-found={got}>
+                <span aria-hidden>{got ? '■' : '□'}</span>
+                {got ? SECRETS[id] : SECRET_HINTS[id]}
+                <span className="sr-only">{got ? ' — found' : ' — not found yet'}</span>
+              </li>
+            )
+          })}
+        </ul>
+      )}
       <ul className="toasts" aria-live="polite">
         {toasts.map((t) => (
           <li key={t.id} className="toast">
