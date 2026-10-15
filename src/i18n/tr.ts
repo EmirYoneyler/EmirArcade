@@ -9,7 +9,7 @@ export const about = {
   title: 'Yazılım Mühendisi',
   location: 'İstanbul, Türkiye',
   summary:
-    "İstanbul Aydın Üniversitesi'nde Bilgisayar Mühendisliği öğrencisiyim. Java/Spring Boot ve Go ile backend, React ve Python ile full-stack ürünler geliştiriyorum. Şu an bir yapay zekâ fotoğraf kabini projesinde stajyerim, yanında freelance web projeleri yapıyorum.",
+    "İstanbul Aydın Üniversitesi'nde Yazılım Geliştirme öğrencisiyim. Java/Spring Boot ve Go ile backend, React ve Python ile full-stack ürünler geliştiriyorum. Şu an MetasoftCo'da yapay zekâ fotoğraf kabini üzerinde stajyerim, yanında freelance web projeleri yapıyorum.",
 }
 
 type ProjectText = {
@@ -135,13 +135,14 @@ export const projects: Record<string, ProjectText> = {
 }
 
 export const cv: typeof enCv = {
-  education: [{ title: 'Bilgisayar Mühendisliği (Lisans)', place: 'İstanbul Aydın Üniversitesi', when: 'devam ediyor' }],
+  education: [{ title: 'Yazılım Geliştirme', place: 'İstanbul Aydın Üniversitesi', when: 'devam ediyor' }],
   experience: [
     {
       title: 'Yazılım Mühendisliği Stajyeri',
-      place: 'Yapay zekâ fotoğraf kabini',
+      place: 'MetasoftCo',
+      href: 'https://www.metasoftco.com/',
       when: 'şu an',
-      detail: "Modal.com üzerinde yüz değiştirme hattı: misafir başına 5–10 yapay zekâ portre şablonu, yaklaşık 10 saniyede.",
+      detail: "Etkinlikler için yapay zekâ fotoğraf kabini — Modal.com üzerinde yüz değiştirme hattı: misafir başına 5–10 yapay zekâ portre şablonu, yaklaşık 10 saniyede.",
     },
     {
       title: 'Freelance Web Geliştirici',
