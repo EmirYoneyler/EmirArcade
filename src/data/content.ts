@@ -209,7 +209,7 @@ export const byteLines = {
   welcome: "Hi, I'm BYTE. Emir built this place, and the jukebox is already on (speaker up top to mute). Poke around — almost everything does something.",
   claw: 'Got one! {skill}. Emir used it in: {projects}.',
   clawNone: "Got one! {skill}. It's in the toolbox — just waiting for the right project.",
-  jukeboxOn: 'Now playing: "{song}". Original chiptune — no copyrights were harmed.',
+  jukeboxOn: 'Now playing: "{song}". Chiptune made for this room — no copyrights were harmed.',
   jukeboxMuted: "It's playing… but sound is off. Hit the speaker up in the corner.",
   jukeboxOff: 'Ahh, silence. The cat approves.',
   listeningNow: 'Right now Emir is listening to {title} by {artist}. Taste: approved.',

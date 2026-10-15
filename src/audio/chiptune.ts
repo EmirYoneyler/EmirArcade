@@ -1,8 +1,8 @@
 import { useApp } from '../store/useApp'
 
 /**
- * Two original chiptune loops, written for this site. Each time the music
- * starts one of them is picked at random (50/50). Square lead, triangle bass,
+ * Two chiptune loops: an original written for this site and an arrangement
+ * of Korobeiniki. Each time the music starts one is picked at random (50/50). Square lead, triangle bass,
  * noise hats, scheduled with Web Audio.
  */
 type Song = {
@@ -29,15 +29,17 @@ const SONGS: Song[] = [
     bass: ['A2', 'F2', 'C3', 'G2', 'A2', 'F2', 'G2', 'A2'],
   },
   {
-    title: 'Bosphorus Night Shift',
-    bpm: 126,
+    // Korobeiniki, the Russian folk song (1861, public domain) that became the
+    // Tetris tune. Our own arrangement of the melody, not the Game Boy one.
+    title: 'Korobeiniki (the Tetris tune)',
+    bpm: 144,
     lead: bars(
-      'D5 . F5 A5 . F5 D5 .', 'C5 . E5 G5 . E5 C5 .',
-      'A#4 . D5 F5 . A5 G5 F5', 'E5 . C#5 A4 . C#5 E5 .',
-      'D5 F5 A5 D6 . C6 A5 .', 'G5 . F5 E5 . D5 C5 .',
-      'A#4 . A4 G4 . A4 C#5 E5', 'D5 - - . . . . .',
+      'E5 - B4 C5 D5 - C5 B4', 'A4 - A4 C5 E5 - D5 C5',
+      'B4 - - C5 D5 - E5 -', 'C5 - A4 - A4 - . .',
+      '. D5 - F5 A5 - G5 F5', 'E5 - - C5 E5 - D5 C5',
+      'B4 - B4 C5 D5 - E5 -', 'C5 - A4 - A4 - . .',
     ),
-    bass: ['D3', 'C3', 'A#2', 'A2', 'D3', 'G2', 'A2', 'D3'],
+    bass: ['E2', 'A2', 'E2', 'A2', 'D2', 'C3', 'E2', 'A2'],
   },
 ]
 
