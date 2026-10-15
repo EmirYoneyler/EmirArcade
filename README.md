@@ -87,6 +87,18 @@ shows the current/last track and BYTE mentions it; the classic view gets a
 4. In Vercel → Project → Settings → Environment Variables add
    `LASTFM_API_KEY` and `LASTFM_USER`, then redeploy.
 
+## CV, share links and analytics
+
+- **CV PDF** — `public/emir-yoneyler-cv.pdf` is generated from `src/data/content.ts`.
+  After editing your CV or projects, run `npm run build && npm run cv:pdf`
+  (needs Playwright with Chromium) and commit the new PDF.
+- **Share links** — every project has its own page, `/projects/<id>`, with its
+  own title, description and preview image (the first `media` entry). Opening
+  the link plays that tape; "Copy link to this tape" on the project page copies it.
+- **Analytics** — Vercel Web Analytics (cookie-free). Turn it on once in the
+  Vercel dashboard: Project → Analytics → Enable. Besides page views it records
+  `Project opened` (which tape) and `CV downloaded`.
+
 ## Performance notes
 
 - First paint loads ~55 kB (gzip) of JS; three.js and friends load only in

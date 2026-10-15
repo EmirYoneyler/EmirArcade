@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useApp } from '../store/useApp'
+import { site } from '../data/content'
+import { track } from '../analytics'
 import { SECRETS, SECRET_COUNT, SECRET_HINTS, type SecretId } from '../data/secrets'
 
 /** Pixel speaker icon (no emoji): cone + waves when on, a cross when muted. */
@@ -39,6 +41,14 @@ export default function Corner() {
         <button className="corner__btn corner__btn--text" onClick={() => setMode('classic')}>
           CLASSIC VIEW
         </button>
+        <a
+          className="corner__btn corner__btn--text"
+          href={site.cvPdf}
+          download
+          onClick={() => track('CV downloaded', { from: 'corner' })}
+        >
+          CV ↓
+        </a>
         <button
           className="corner__secrets"
           onClick={() => setListOpen((o) => !o)}

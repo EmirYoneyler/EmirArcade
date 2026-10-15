@@ -19,6 +19,8 @@ export type Project = {
   media: string[]
   /** Short cartridge label for the SELECT GAME menu (max ~14 chars). */
   cartridge: string
+  /** Problem → approach → outcome, a few sentences each. */
+  caseStudy: { problem: string; approach: string; outcome: string }
 }
 
 export const about = {
@@ -31,6 +33,7 @@ export const about = {
   github: [
     { label: 'EmirYoneyler', href: 'https://github.com/EmirYoneyler' },
   ],
+  linkedin: 'https://www.linkedin.com/in/emir-yoneyler/',
 }
 
 export const skills = ['Go', 'Java', 'Python', 'React', 'PostgreSQL', 'Docker'] as const
@@ -71,6 +74,11 @@ export const projects: Project[] = [
     stack: ['Go', 'Fiber', 'HTMX', 'PostgreSQL (Neon)', 'pgx', 'JWT', 'Docker', 'Render'],
     links: [{ label: 'Live site', href: 'https://mymood-5bh2.onrender.com/' }, gh('mymood2')],
     media: ['/projects/mymood/home.jpg', '/projects/mymood/register.jpg', '/projects/mymood/mobile.jpg'],
+    caseStudy: {
+      problem: 'Mood apps are private diaries. I wanted the opposite: a light way to check in on friends, without building a whole social network.',
+      approach: 'Kept it to one Go binary: server-rendered pages with HTMX, hand-written SQL and sessions in HttpOnly cookies. There is no separate frontend build and nothing to keep in sync.',
+      outcome: 'Live on Render with a Neon PostgreSQL database. Sign-up, friends and the daily feed all work in production.',
+    },
   },
   {
     id: 'alagems',
@@ -90,6 +98,11 @@ export const projects: Project[] = [
     stack: ['Go', 'Fiber', 'Admin CMS', 'RU / EN'],
     links: [{ label: 'Live site', href: 'https://alagems.kz/' }],
     media: ['/projects/alagems/home.jpg', '/projects/alagems/services.jpg'],
+    caseStudy: {
+      problem: 'A logistics company handling valuable cargo in Almaty needed a credible bilingual website that its own team could keep up to date.',
+      approach: 'Built the Go/Fiber backend and an admin CMS, so the company edits its Russian and English content without touching code.',
+      outcome: "Live at alagems.kz as the company's public website.",
+    },
   },
   {
     id: 'coachai',
@@ -109,6 +122,11 @@ export const projects: Project[] = [
     stack: ['Python', 'MediaPipe', 'OpenCV', 'NumPy', 'OpenAI API', 'Streamlit'],
     links: [gh('COACHAIprototip')],
     media: ['/projects/coachai/pose.jpg', '/projects/coachai/app.jpg'],
+    caseStudy: {
+      problem: 'Training alone, nobody tells you that your squat is too shallow or your elbows drift.',
+      approach: 'MediaPipe gives 33 body landmarks per webcam frame. Joint angles drive a rep counter and form rules, and a recorded set goes to GPT for written feedback.',
+      outcome: 'A working prototype that counts reps and flags form for squats, curls and push-ups using an ordinary webcam.',
+    },
   },
   {
     id: 'critic-que',
@@ -128,6 +146,11 @@ export const projects: Project[] = [
     stack: ['Python', 'FastAPI', 'Pydantic', 'BeautifulSoup', 'React', 'Vite', 'Tailwind', 'Docker'],
     links: [gh('The-Critic-Que')],
     media: ['/projects/critic-que/home.jpg'],
+    caseStudy: {
+      problem: 'Choosing a film means opening IMDb, Letterboxd, Rotten Tomatoes and Reddit in separate tabs.',
+      approach: 'A FastAPI backend gathers ratings and reviews from each source into typed models and falls back instead of failing when a source blocks scraping. A React dashboard shows it all in one place.',
+      outcome: 'One search shows five rating sources side by side, plus a Letterboxd Top 10 and director discovery.',
+    },
   },
   {
     id: 'uniasistan',
@@ -147,6 +170,11 @@ export const projects: Project[] = [
     stack: ['Python', 'PostgreSQL', 'pgvector', 'RAG', 'FastAPI (planned)'],
     links: [gh('uniasistan')],
     media: ['/projects/uniasistan/pipeline.jpg'],
+    caseStudy: {
+      problem: 'The university regulation is 16 pages and 48 articles. Students ask each other in WhatsApp groups and often get the wrong answer.',
+      approach: 'Ingestion tuned for Turkish legal text: one chunk per article (MADDE) with its chapter and title as metadata, multi-letter clauses handled, and long articles split at paragraph boundaries.',
+      outcome: '58 clean chunks from the regulation with no missing titles or chapters. Hybrid retrieval and the chat interface are next.',
+    },
   },
   {
     id: 'bulletin-service',
@@ -171,12 +199,19 @@ export const projects: Project[] = [
       { label: 'pdf-service', href: 'https://github.com/EmirYoneyler/pdf-service' },
     ],
     media: ['/projects/bulletin/architecture.jpg', '/projects/bulletin/api.jpg'],
+    caseStudy: {
+      problem: 'Investment-fund bulletins need fund data that is managed securely and published in a consistent format.',
+      approach: 'Split into services: auth-service issues JWTs, bulletin-service owns fund data in PostgreSQL, and pdf-service will render the bulletin.',
+      outcome: 'Auth and fund APIs run end to end (register, JWT, fund CRUD, popular funds, search). PDF rendering is the next step.',
+    },
   },
 ]
 
 export const site = {
   url: 'https://emirarcade.vercel.app',
   ogImage: '/og.jpg',
+  /** Regenerate after editing the CV: `npm run build && npm run cv:pdf`. */
+  cvPdf: '/emir-yoneyler-cv.pdf',
 }
 
 /** CV shown when the cork board is clicked (and in the classic view). */
@@ -231,5 +266,8 @@ export const byteLines = {
 export const contact = {
   pitch: 'Open to internships, junior backend roles and freelance projects.',
   email: about.email,
-  links: about.github,
+  links: [
+    ...about.github.map((g) => ({ label: `github.com/${g.label}`, href: g.href })),
+    { label: 'linkedin.com/in/emir-yoneyler', href: about.linkedin },
+  ],
 }

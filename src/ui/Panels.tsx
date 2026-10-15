@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useApp } from '../store/useApp'
-import { about, contact, cv, projects } from '../data/content'
+import { about, contact, cv, projects, site } from '../data/content'
+import { track } from '../analytics'
 import RecentRepos from './RecentRepos'
 import ContactForm from './ContactForm'
 
@@ -33,6 +34,14 @@ function CV() {
         {about.title} · {about.location}
       </p>
       <p>{about.summary}</p>
+      <p className="sheet__row">
+        <a className="sheet__btn" href={site.cvPdf} download onClick={() => track('CV downloaded', { from: 'cork board' })}>
+          Download PDF
+        </a>
+        <a className="sheet__btn" href={about.linkedin} target="_blank" rel="noreferrer">
+          LinkedIn ↗
+        </a>
+      </p>
       <h3>Experience</h3>
       {cv.experience.map((e) => (
         <div key={e.title} className="sheet__item">
@@ -90,12 +99,12 @@ function Contact() {
           {copied ? 'Copied' : 'Copy'}
         </button>
       </p>
-      <h3>GitHub</h3>
+      <h3>Profiles</h3>
       <ul>
         {contact.links.map((l) => (
           <li key={l.href}>
             <a href={l.href} target="_blank" rel="noreferrer">
-              github.com/{l.label}
+              {l.label}
             </a>
           </li>
         ))}
